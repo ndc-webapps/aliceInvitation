@@ -244,15 +244,8 @@
   </div>
 </div>
 
-<!-- Load EmailJS SDK from CDN -->
+<!-- Load EmailJS SDK from CDN (must be before the script that uses emailjs) -->
 <script src="https://cdn.emailjs.com/sdk/3.2.0/email.min.js"></script>
-
-<!-- Then your script that calls emailjs.init/send -->
-<script>
-  emailjs.init('WCxmw76Onz5EwVkrU');
-  // your form handler code...
-</script>
-
 
 <script>
 /* ====== CONFIG - your EmailJS values ====== */
@@ -350,8 +343,8 @@ function renderCompanions(){
   compCount.textContent = companions.length;
 }
 
-/* Helper: ensure EmailJS SDK is available (local file ensures this, but keep check) */
-async function ensureEmailJSSDK(timeout = 3000) {
+/* Helper: ensure EmailJS SDK is available (wait briefly if needed) */
+async function ensureEmailJSSDK(timeout = 5000) {
   if (window.emailjs && typeof emailjs.send === 'function') return true;
   const start = Date.now();
   return new Promise(resolve => {
@@ -396,7 +389,7 @@ rsvpForm.addEventListener('submit', async (e)=>{
   sendBtn.textContent = 'Sending…';
 
   try {
-    const sdkReady = await ensureEmailJSSDK(3000);
+    const sdkReady = await ensureEmailJSSDK(5000);
     if(!sdkReady) throw new Error('EmailJS SDK not available');
 
     // initialize (safe to call multiple times)
