@@ -9,10 +9,11 @@
   :root{
     --bg-cream:#efe6e2;
     --bg-wash:#f4e9e7;
-    /* More transparent main panel so background shows through */
-    --panel-rgba: rgba(246,240,239,0.65);
-    /* Modal slightly less transparent than stage for clarity */
-    --modal-rgba: rgba(246,240,239,0.78);
+
+    /* Stronger background visibility */
+    --panel-rgba: rgba(246,240,239,0.40); /* lowered for stronger background visibility */
+    --modal-rgba: rgba(246,240,239,0.78); /* keep modal clearer than stage */
+
     --burgundy:#6b0f1a;
     --gold:#caa43a;
     --rose:#c48b8b;
@@ -41,6 +42,7 @@
     -webkit-touch-callout:none;
     -webkit-user-select:none;
     touch-action:manipulation;
+    background-color: var(--bg-cream);
   }
 
   /* PNG texture layer (bg.png) placed in project root */
@@ -51,13 +53,15 @@
     height:100%;
     z-index:0;
     pointer-events:none;
-    opacity:0.92;
+    opacity:0.98; /* high visibility */
     background-image: url('bg.png');
     background-size: cover;
-    background-position: center;
+    /* move balloons higher: center 8% */
+    background-position: center 8%;
     background-repeat: no-repeat;
-    filter: blur(0.6px) saturate(1.02) contrast(0.98);
+    filter: blur(0.45px) saturate(1.06) contrast(1.02);
     mix-blend-mode: multiply;
+    transition: opacity .18s ease, background-position .18s ease;
   }
 
   /* Main card: semi-transparent so background shows through, but text remains readable */
@@ -76,6 +80,25 @@
     align-items:stretch;
     border:1px solid rgba(107,15,26,0.08);
     z-index:2;
+  }
+
+  @media (max-width:520px){
+    /* enforce stronger transparency on mobile */
+    :root{
+      --panel-rgba: rgba(246,240,239,0.36); /* slightly more transparent on phones */
+      --modal-rgba: rgba(246,240,239,0.78);
+    }
+
+    /* ensure background is visible and balloons align higher on small screens */
+    .texture-bg{
+      opacity:1;               /* make background fully visible on mobile */
+      background-position: center 6%; /* nudge balloons even higher for small screens */
+      filter: blur(0.35px) saturate(1.08) contrast(1.04);
+    }
+
+    /* Slightly reduce padding for narrow screens */
+    .hero{ padding:28px 18px; }
+    .stage{ min-height: auto; }
   }
 
   @media (max-height:720px) and (max-width:520px){
@@ -108,7 +131,7 @@
     letter-spacing:-0.4px;
     font-weight:800;
     color:var(--burgundy);
-    text-shadow: 0 1px 0 rgba(255,255,255,0.55);
+    text-shadow: 0 1px 0 rgba(255,255,255,0.6);
   }
   .sub{ margin:10px 0 0 0; color:var(--muted); font-size:15px; max-width:52ch; font-weight:600; }
   .whenwhere{ margin-top:12px; color:var(--muted); font-size:14px; font-weight:600; }
