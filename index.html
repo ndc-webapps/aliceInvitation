@@ -244,32 +244,14 @@
   </div>
 </div>
 
-<!-- EmailJS SDK (load first) -->
-<script src="https://cdn.emailjs.com/sdk/3.2.0/email.min.js"></script>
+<!-- Local EmailJS SDK (include this file in your repo next to index.html) -->
+<script src="/email.min.js"></script>
 
 <script>
-/* ====== CONFIG - replace with your EmailJS values ====== */
-const EMAILJS_USER_ID = 'WCxmw76Onz5EwVkrU';         // replace
-const EMAILJS_SERVICE_ID = 'service_wd029q5';   // replace
-const EMAILJS_TEMPLATE_ID = 'template_1batocb'; // replace
-
-/* Initialize EmailJS immediately after SDK loads */
-if (window.emailjs && typeof emailjs.init === 'function') {
-  try { emailjs.init(EMAILJS_USER_ID); console.log('EmailJS initialized'); }
-  catch(e){ console.warn('EmailJS init error', e); }
-} else {
-  // If SDK not yet available, attempt to init after short delay
-  (function waitInit(){
-    let attempts = 0;
-    const id = setInterval(()=>{
-      attempts++;
-      if(window.emailjs && typeof emailjs.init === 'function'){
-        try{ emailjs.init(EMAILJS_USER_ID); console.log('EmailJS initialized (delayed)'); }catch(e){ console.warn('EmailJS init error', e); }
-        clearInterval(id);
-      } else if(attempts>50){ clearInterval(id); console.warn('EmailJS SDK not available after waiting'); }
-    },100);
-  })();
-}
+/* ====== CONFIG - your EmailJS values ====== */
+const EMAILJS_USER_ID = 'WCxmw76Onz5EwVkrU';
+const EMAILJS_SERVICE_ID = 'service_wd029q5';
+const EMAILJS_TEMPLATE_ID = 'template_1batocb';
 
 /* ====== Slideshow logic ====== */
 const slides = Array.from(document.querySelectorAll('.slide'));
@@ -361,10 +343,11 @@ function renderCompanions(){
   compCount.textContent = companions.length;
 }
 
-/* Helper: wait for EmailJS SDK to be ready */
-function waitForEmailJSSDK(timeout = 5000) {
-  return new Promise((resolve) => {
-    const start = Date.now();
+/* Helper: ensure EmailJS SDK is available (local file ensures this, but keep check) */
+async function ensureEmailJSSDK(timeout = 3000) {
+  if (window.emailjs && typeof emailjs.send === 'function') return true;
+  const start = Date.now();
+  return new Promise(resolve => {
     (function check() {
       if (window.emailjs && typeof emailjs.send === 'function') return resolve(true);
       if (Date.now() - start > timeout) return resolve(false);
@@ -373,7 +356,7 @@ function waitForEmailJSSDK(timeout = 5000) {
   });
 }
 
-/* ====== Send via EmailJS on submit (NO mailto fallback, NO popups) ====== */
+/* ====== Safe submit handler (no mailto fallback) ====== */
 rsvpForm.addEventListener('submit', async (e)=>{
   e.preventDefault();
   sendError.style.display='none';
@@ -406,10 +389,12 @@ rsvpForm.addEventListener('submit', async (e)=>{
   sendBtn.textContent = 'Sending…';
 
   try {
-    const sdkReady = await waitForEmailJSSDK(5000);
+    const sdkReady = await ensureEmailJSSDK(3000);
     if(!sdkReady) throw new Error('EmailJS SDK not available');
 
-    // send via EmailJS
+    // initialize (safe to call multiple times)
+    if (typeof emailjs.init === 'function') emailjs.init(EMAILJS_USER_ID);
+
     const result = await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
     console.log('EmailJS send success', result);
 
@@ -417,10 +402,11 @@ rsvpForm.addEventListener('submit', async (e)=>{
     document.getElementById('successName').textContent = name;
     document.getElementById('successBackdrop').style.display = 'flex';
     document.getElementById('successBackdrop').setAttribute('aria-hidden','false');
-    closeForm();
+    rsvpForm.reset();
+    companions = [];
+    renderCompanions();
   } catch (err) {
     console.error('EmailJS send failed:', err);
-    // show inline error only
     let msg = 'Sending failed. Please try again in a moment.';
     if(err && err.status) msg += ` (status ${err.status})`;
     if(err && err.text) msg += ` ${err.text}`;
