@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>EmailJS SDK Test</title>
+  <style>
+    body{font-family:system-ui,Segoe UI,Roboto,Arial;background:#071029;color:#fff;display:flex;flex-direction:column;gap:12px;align-items:flex-start;padding:28px}
+    .ok{color:#7ee787}
+    .bad{color:#ff8b8b}
+    pre{background:#071827;padding:12px;border-radius:8px;max-width:100%;overflow:auto}
+    button{padding:10px 12px;border-radius:8px;border:none;cursor:pointer}
+  </style>
+</head>
+<body>
+  <h2>EmailJS SDK Test</h2>
+  <div id="status">Starting test…</div>
+  <div>
+    <button id="run">Run test now</button>
+    <button id="reload">Hard refresh</button>
+  </div>
+  <h3>Console output</h3>
+  <pre id="log"></pre>
+
+  <script>
+    const LOG = document.getElementById('log');
+    const STATUS = document.getElementById('status');
+    function write(...args){
+      console.log(...args);
+      LOG.textContent += args.map(a => (typeof a === 'object' ? JSON.stringify(a) : String(a))).join(' ') + '\\n';
+    }
+
+    async function runTest(){
+      LOG.textContent = '';
+      STATUS.textContent = '1) Checking CDN fetch…';
+      try {
+        const r = await fetch('https://cdn.emailjs.com/sdk/3.2.0/email.min.js', {cache: 'no-store'});
+        write('CDN fetch status', r.status);
+        if (!r.ok) {
+          STATUS.innerHTML = '<span class="bad">CDN fetch failed: ' + r.status + '</span>';
+          return;
+        }
+      } catch (err) {
+        write('CDN fetch error', err);
+        STATUS.innerHTML = '<span class="bad">CDN fetch error (network/CSP/blocked)</span>';
+        return;
+      }
+
+      STATUS.textContent = '2) Appending CDN script tag and waiting for load…';
+      try {
+        if (!(window.emailjs && typeof emailjs.send === 'function')) {
+          await new Promise((resolve, reject) => {
+            const s = document.createElement('script');
+            s.src = 'https://cdn.emailjs.com/sdk/3.2.0/email.min.js';
+            s.async = false;
+            s.onload = () => { write('CDN script loaded'); resolve(); };
+            s.onerror = (e) => { write('CDN script load error', e); reject(new Error('CDN script load failed')); };
+            document.head.appendChild(s);
+          });
+        } else {
+          write('EmailJS already present');
+        }
+      } catch (err) {
+        write('Script append failed', err);
+        STATUS.innerHTML = '<span class="bad">Script append failed</span>';
+        return;
+      }
+
+      // short wait for library to initialize
+      await new Promise(r => setTimeout(r, 250));
+      write('window.emailjs present?', !!window.emailjs, 'typeof send:', typeof (window.emailjs && emailjs.send));
+      if (!(window.emailjs && typeof emailjs.send === 'function')) {
+        STATUS.innerHTML = '<span class="bad">SDK not available after load</span>';
+        return;
+      }
+
+      STATUS.textContent = '3) Initializing EmailJS and attempting test send…';
+      try {
+        // Use your IDs below (these are the ones you've been using)
+        const USER_ID = 'WCxmw76Onz5EwVkrU';
+        const SERVICE_ID = 'service_wd029q5';
+        const TEMPLATE_ID = 'template_1batocb';
+
+        if (typeof emailjs.init === 'function') emailjs.init(USER_ID);
+        write('Called emailjs.init');
+
+        const res = await emailjs.send(SERVICE_ID, TEMPLATE_ID, {
+          response_type: 'Console Test',
+          guest_name: 'Console Test',
+          guest_phone: '0000000000',
+          guest_email: 'test@example.com',
+          guest_companions: '(none)',
+          guest_message: 'test',
+          location: 'Jazz Makati'
+        });
+        write('EmailJS send success', res);
+        STATUS.innerHTML = '<span class="ok">Send success — check network and inbox (if applicable)</span>';
+      } catch (err) {
+        write('EmailJS send failed:', err);
+        try { write('err.status:', err.status, 'err.text:', err.text, 'err.message:', err.message); } catch(e){}
+        STATUS.innerHTML = '<span class="bad">Send failed — see console output above</span>';
+      }
+    }
+
+    document.getElementById('run').addEventListener('click', runTest);
+    document.getElementById('reload').addEventListener('click', ()=> location.reload(true));
+    // auto-run once on load
+    setTimeout(runTest, 300);
+  </script>
+</body>
+</html>
