@@ -196,7 +196,7 @@
 
 <!-- Fallback loader helper: if CDN script fails to execute, try local file -->
 <script>
-  // This function will be called if the CDN script tag triggers onerror.
+  // Fallback loader: attempts to load local email.min.js if CDN fails to execute
   window._emailjsFallback = function() {
     try {
       if (window.emailjs && typeof emailjs.send === 'function') return;
@@ -212,8 +212,8 @@
   };
 </script>
 
-<!-- Try CDN first. If the script element fails to execute, onerror triggers the fallback above. -->
-<script src="https://cdn.emailjs.com/sdk/3.2.0/email.min.js" onerror="window._emailjsFallback()"></script>
+<!-- Primary CDN: jsDelivr (serves the real JS). onerror triggers fallback loader. -->
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3.2.0/dist/email.min.js" onerror="window._emailjsFallback()"></script>
 
 <script>
 /* ====== CONFIG - your EmailJS values ====== */
@@ -221,29 +221,56 @@ const EMAILJS_USER_ID = 'WCxmw76Onz5EwVkrU';
 const EMAILJS_SERVICE_ID = 'service_wd029q5';
 const EMAILJS_TEMPLATE_ID = 'template_1batocb';
 
-/* ====== Slideshow logic (unchanged) ====== */
+/* ====== Slideshow logic ====== */
 const slides = Array.from(document.querySelectorAll('.slide'));
 const dotsWrap = document.getElementById('dots');
 let current = 0;
 let autoplay = true;
 let timer = null;
-function makeDots(){ slides.forEach((s,i)=>{ const d=document.createElement('div'); d.className='dot'+(i===0?' active':''); d.setAttribute('data-index',i); d.addEventListener('click',()=>goTo(i)); dotsWrap.appendChild(d); }); }
-function updateSlides(){ slides.forEach((s,i)=>{ s.classList.toggle('active', i===current); s.setAttribute('aria-hidden', i===current ? 'false' : 'true'); }); Array.from(dotsWrap.children).forEach((d,i)=> d.classList.toggle('active', i===current)); }
-function goTo(i){ current=(i+slides.length)%slides.length; updateSlides(); resetTimer(); }
+
+function makeDots(){
+  slides.forEach((s,i)=>{
+    const d = document.createElement('div');
+    d.className = 'dot' + (i===0 ? ' active' : '');
+    d.setAttribute('data-index', i);
+    d.addEventListener('click', ()=> goTo(i));
+    dotsWrap.appendChild(d);
+  });
+}
+function updateSlides(){
+  slides.forEach((s,i)=>{
+    s.classList.toggle('active', i===current);
+    s.setAttribute('aria-hidden', i===current ? 'false' : 'true');
+  });
+  Array.from(dotsWrap.children).forEach((d,i)=> d.classList.toggle('active', i===current));
+}
+function goTo(i){
+  current = (i + slides.length) % slides.length;
+  updateSlides();
+  resetTimer();
+}
 function next(){ goTo(current+1) }
 function prev(){ goTo(current-1) }
 document.getElementById('next').addEventListener('click', next);
 document.getElementById('prev').addEventListener('click', prev);
-function startTimer(){ if(timer) clearInterval(timer); timer=setInterval(()=>{ if(autoplay) next(); },4200); }
-function resetTimer(){ startTimer() }
-makeDots(); updateSlides(); startTimer();
-const slideshowEl = document.querySelector('.slideshow');
-slideshowEl.addEventListener('mouseenter', ()=> autoplay=false);
-slideshowEl.addEventListener('mouseleave', ()=> autoplay=true);
-slideshowEl.addEventListener('touchstart', ()=> autoplay=false);
-slideshowEl.addEventListener('touchend', ()=> autoplay=true);
 
-/* ====== Modal & form logic (unchanged) ====== */
+function startTimer(){
+  if(timer) clearInterval(timer);
+  timer = setInterval(()=> { if(autoplay) next(); }, 4200);
+}
+function resetTimer(){ startTimer() }
+
+makeDots();
+updateSlides();
+startTimer();
+
+const slideshowEl = document.querySelector('.slideshow');
+slideshowEl.addEventListener('mouseenter', ()=> autoplay = false);
+slideshowEl.addEventListener('mouseleave', ()=> autoplay = true);
+slideshowEl.addEventListener('touchstart', ()=> autoplay = false);
+slideshowEl.addEventListener('touchend', ()=> autoplay = true);
+
+/* ====== Modal & form logic ====== */
 const modalBackdrop = document.getElementById('modalBackdrop');
 const openRsvp = document.getElementById('openRsvp');
 const cancelBtn = document.getElementById('cancelBtn');
@@ -254,26 +281,46 @@ const compCount = document.getElementById('compCount');
 const sendBtn = document.getElementById('sendBtn');
 const sendError = document.getElementById('sendError');
 let companions = [];
+
 function openForm(){ sendError.style.display='none'; sendError.textContent=''; modalBackdrop.style.display='flex'; modalBackdrop.setAttribute('aria-hidden','false'); setTimeout(()=> document.getElementById('guestName').focus(), 120); }
 function closeForm(){ modalBackdrop.style.display='none'; modalBackdrop.setAttribute('aria-hidden','true'); rsvpForm.reset(); companions=[]; renderCompanions(); sendError.style.display='none'; sendError.textContent=''; }
+
 openRsvp.addEventListener('click', openForm);
 cancelBtn.addEventListener('click', closeForm);
 addCompanionBtn.addEventListener('click', ()=> { companions.push(''); renderCompanions(); });
-function renderCompanions(){ companionList.innerHTML=''; companions.forEach((c,idx)=>{ const row=document.createElement('div'); row.className='companion-row'; const input=document.createElement('input'); input.type='text'; input.placeholder='Companion full name'; input.value=c; input.addEventListener('input',(e)=>companions[idx]=e.target.value); const remove=document.createElement('button'); remove.type='button'; remove.className='btn btn-cancel'; remove.textContent='Remove'; remove.addEventListener('click',()=>{ companions.splice(idx,1); renderCompanions(); }); row.appendChild(input); row.appendChild(remove); companionList.appendChild(row); }); compCount.textContent = companions.length; }
+
+function renderCompanions(){
+  companionList.innerHTML = '';
+  companions.forEach((c, idx)=>{
+    const row = document.createElement('div');
+    row.className = 'companion-row';
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.placeholder = 'Companion full name';
+    input.value = c;
+    input.addEventListener('input', (e)=> companions[idx] = e.target.value);
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.className = 'btn btn-cancel';
+    remove.textContent = 'Remove';
+    remove.addEventListener('click', ()=> { companions.splice(idx,1); renderCompanions(); });
+    row.appendChild(input);
+    row.appendChild(remove);
+    companionList.appendChild(row);
+  });
+  compCount.textContent = companions.length;
+}
 
 /* Helper: robust SDK availability check and fallback trigger */
 async function ensureEmailJSSDK(timeout = 6000) {
-  // If already present, return true
   if (window.emailjs && typeof emailjs.send === 'function') return true;
 
-  // Wait a bit for CDN to execute
   const start = Date.now();
   while (!(window.emailjs && typeof emailjs.send === 'function') && Date.now() - start < timeout) {
     await new Promise(r => setTimeout(r, 150));
   }
   if (window.emailjs && typeof emailjs.send === 'function') return true;
 
-  // If still not available, attempt to load local fallback (if present)
   try {
     window._emailjsFallback();
     const start2 = Date.now();
