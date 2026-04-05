@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Alice Dela Cruz — 80th Birthday RSVP</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#071029;
+    --panel:#071827;
+    --accent:#ffd166;
+    --accent-2:#ff7b7b;
+    --muted:#94a3b8;
+    --white:#ffffff;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+    background: linear-gradient(180deg,#071029 0%, #0f172a 60%);
+    color:var(--white);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+  }
+
+  .stage{
+    width:100%;
+    max-width:1100px;
+    border-radius:16px;
+    overflow:hidden;
+    position:relative;
+    box-shadow:0 30px 80px rgba(2,6,23,0.7);
+    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    display:flex;
+    min-height:520px;
+  }
+
+  .hero{
+    padding:48px 48px;
+    flex:1;
+    min-width:320px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    gap:18px;
+  }
+  .eyebrow{color:var(--muted);font-weight:600;letter-spacing:1px;font-size:13px}
+  h1{margin:8px 0 0 0;font-size:48px;line-height:1.02;letter-spacing:-0.6px;font-weight:800;color:var(--white)}
+  .sub{margin:12px 0 0 0;color:var(--muted);font-size:16px;max-width:48ch}
+  .whenwhere{margin-top:12px;color:var(--muted);font-size:14px}
+
+  .hero-actions{display:flex;align-items:center;justify-content:center;gap:12px;margin:0 auto;width:100%;max-width:420px;padding:18px 12px}
+  .hero-actions-inner{display:flex;gap:12px;align-items:center;justify-content:center;width:100%}
+  .rsvp-main{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#071029;padding:12px 22px;border-radius:999px;font-weight:800;font-size:16px;border:none;cursor:pointer;flex:1;min-width:120px}
+  .rsvp-secondary{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--white);padding:10px 14px;border-radius:10px;cursor:pointer;flex:0 0 auto}
+
+  .slideshow{
+    width:46%;
+    min-width:360px;
+    background:linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:28px;
+  }
+  .slides{width:100%;height:100%;position:relative;display:flex;align-items:center;justify-content:center}
+  .slide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;transition:opacity .7s ease, transform .7s ease;opacity:0;transform:scale(.98);padding:20px}
+  .slide.active{opacity:1;transform:scale(1)}
+  .img-wrap{width:92%;height:72%;border-radius:12px;overflow:hidden;background:linear-gradient(135deg,#0b1220,#111827);display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.03);box-shadow:0 20px 60px rgba(2,6,23,0.6), inset 0 1px 0 rgba(255,255,255,0.02)}
+  .img-wrap img{width:100%;height:100%;object-fit:cover;display:block}
+
+  .controls{position:absolute;left:18px;bottom:18px;display:flex;gap:10px;align-items:center}
+  .dot{width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,0.08);cursor:pointer}
+  .dot.active{background:var(--accent)}
+  .arrow{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--white);padding:8px;border-radius:10px;cursor:pointer;margin-left:8px}
+
+  .backdrop{position:fixed;inset:0;background:rgba(2,6,23,0.6);display:none;align-items:center;justify-content:center;z-index:60;padding:20px}
+  .modal{width:100%;max-width:720px;background:linear-gradient(180deg,#071827,#071827);border-radius:12px;padding:20px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 30px 80px rgba(2,6,23,0.7);color:var(--white)}
+  .modal h3{margin:0 0 8px 0;font-size:20px}
+  .modal .small{color:var(--muted);font-size:14px;margin-bottom:12px}
+  .form-row{display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+  label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+  input[type=text], input[type=email], input[type=tel], textarea{width:100%;padding:10px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--white)}
+  textarea{min-height:90px;resize:vertical}
+  .companion-list{display:flex;flex-direction:column;gap:8px;margin-bottom:8px}
+  .companion-row{display:flex;gap:8px;align-items:center}
+  .btn{padding:10px 14px;border-radius:10px;border:none;cursor:pointer;font-weight:700}
+  .btn-add{background:transparent;border:1px dashed rgba(255,255,255,0.06);color:var(--accent)}
+  .btn-send{background:var(--accent);color:#071029}
+  .btn-cancel{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+
+  .inline-error{color:#ffb4b4;background:rgba(255,0,0,0.06);padding:10px;border-radius:8px;margin-top:8px;display:none}
+  .success-modal .name{font-weight:800;color:var(--accent);margin-top:8px}
+
+  @media (max-width:980px){
+    .stage{flex-direction:column;min-height:640px}
+    .slideshow{width:100%;min-width:0;height:42%;padding:18px}
+    .hero{padding:28px 20px}
+    h1{font-size:34px}
+    .hero-actions{margin-top:8px}
+    .rsvp-main{font-size:15px;padding:10px 16px}
+  }
+  @media (max-width:520px){
+    h1{font-size:28px}
+    .hero{padding:20px}
+    .img-wrap{height:60%}
+    .rsvp-main{padding:10px 12px;font-size:15px}
+    .hero-actions-inner{flex-direction:column-reverse;gap:10px}
+    .rsvp-secondary{width:100%}
+    .rsvp-main{width:100%}
+  }
+</style>
+</head>
+<body>
+
+<div class="stage" role="main" aria-labelledby="heroTitle">
+  <div class="hero" aria-hidden="false">
+    <div class="hero-top">
+      <div class="eyebrow">Celebration</div>
+      <h1 id="heroTitle">Alice Dela Cruz — 80th Birthday</h1>
+      <p class="sub">Join us in honoring a life of love, wisdom, and family. Please let us know if you can attend — your presence and warm wishes mean the world.</p>
+      <div class="whenwhere"><strong>When</strong>: To be announced &nbsp; • &nbsp; <strong>Where</strong>: Jazz Makati</div>
+
+      <div class="map-wrap" aria-hidden="false" style="margin-top:14px">
+        <div class="map-header"><strong>Location</strong>: Jazz Makati — interactive map</div>
+        <iframe title="Jazz Makati map" src="https://www.google.com/maps?q=Jazz+Makati&output=embed" style="width:100%;height:220px;border:0;display:block;" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
+    </div>
+
+    <div class="hero-actions" aria-hidden="false">
+      <div class="hero-actions-inner">
+        <button class="rsvp-main" id="openRsvp">RSVP</button>
+        <button class="rsvp-secondary" id="notGoingBtn">Not going</button>
+      </div>
+    </div>
+
+    <div style="height:8px" aria-hidden="true"></div>
+  </div>
+
+  <div class="slideshow" aria-label="Photo slideshow placeholder">
+    <div class="slides" id="slides">
+      <div class="slide active" data-index="0" aria-hidden="false">
+        <div class="img-wrap"><img src="1.jpg" alt="Slide 1"></div>
+      </div>
+      <div class="slide" data-index="1" aria-hidden="true">
+        <div class="img-wrap"><img src="2.jpg" alt="Slide 2"></div>
+      </div>
+      <div class="slide" data-index="2" aria-hidden="true">
+        <div class="img-wrap"><img src="3.jpg" alt="Slide 3"></div>
+      </div>
+    </div>
+
+    <div class="controls" aria-hidden="false">
+      <div id="dots" style="display:flex;gap:8px;align-items:center"></div>
+      <button class="arrow" id="prev" aria-label="Previous slide">◀</button>
+      <button class="arrow" id="next" aria-label="Next slide">▶</button>
+    </div>
+  </div>
+</div>
+
+<!-- Going modal -->
+<div class="backdrop" id="modalBackdrop" aria-hidden="true" role="dialog" aria-modal="true">
+  <div class="modal" role="document" id="goingModal">
+    <h3 id="modalTitle">RSVP — Going</h3>
+    <div class="small">Please share your details so we can prepare seating and refreshments.</div>
+
+    <form id="rsvpForm" autocomplete="on">
+      <div class="form-row">
+        <div style="flex:1;min-width:160px">
+          <label for="guestName"><strong>Full name</strong></label>
+          <input id="guestName" name="guestName" type="text" required placeholder="Full name" autocomplete="name">
+        </div>
+        <div style="flex:1;min-width:160px">
+          <label for="guestPhone"><strong>Phone number</strong></label>
+          <input id="guestPhone" name="guestPhone" type="tel" required placeholder="+63 9xx xxx xxxx" autocomplete="tel">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div style="flex:1;min-width:160px">
+          <label for="guestEmail"><strong>Email (optional)</strong></label>
+          <input id="guestEmail" name="guestEmail" type="email" placeholder="you@example.com" autocomplete="email">
+        </div>
+        <div style="flex:1;min-width:160px">
+          <label><strong>Companions</strong></label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <div id="compCount" style="color:var(--muted)">0</div>
+            <button type="button" class="btn btn-add" id="addCompanionBtn">Add companion</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="companion-list" id="companionList" aria-live="polite"></div>
+
+      <label for="message"><strong>Message or notes</strong></label>
+      <textarea id="message" name="message" placeholder="Dietary needs, greetings, or short note"></textarea>
+
+      <div id="sendError" class="inline-error" style="display:none"></div>
+
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:14px">
+        <button type="button" class="btn btn-cancel" id="cancelBtn">Cancel</button>
+        <button type="submit" class="btn btn-send" id="sendBtn">Send RSVP</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Success modal -->
+<div class="backdrop" id="successBackdrop" aria-hidden="true" role="dialog" aria-modal="true">
+  <div class="modal success-modal" role="document" aria-labelledby="successTitle">
+    <h3 id="successTitle">Thank you</h3>
+    <div class="small">Your RSVP has been sent.</div>
+    <div style="margin-top:12px">We appreciate your response,</div>
+    <div class="name" id="successName" style="font-size:18px;margin-top:8px;color:var(--accent)"></div>
+    <div style="display:flex;justify-content:flex-end;margin-top:18px">
+      <button class="btn btn-send" id="successClose">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Not-going modal -->
+<div class="backdrop" id="sadBackdrop" aria-hidden="true" role="dialog" aria-modal="true">
+  <div class="modal" role="document" aria-labelledby="sadTitle">
+    <div style="display:flex;gap:14px;align-items:flex-start">
+      <div style="flex:1">
+        <div class="sad-emoji">😔</div>
+        <h3 id="sadTitle">We’ll miss you</h3>
+        <p style="color:var(--muted);line-height:1.5">
+          It truly saddens us to hear you won’t be able to join the celebration for our beloved grandma, Alice Dela Cruz.
+          Your presence will be missed, and your warm thoughts and prayers mean so much to the family.
+          If you’d like, please send a short message or regrets — we’ll make sure your kind words are shared.
+        </p>
+        <div class="sad-actions">
+          <button class="btn btn-cancel" id="sadClose">Close</button>
+          <button class="btn btn-send" id="sendRegrets">Send regrets by email</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EmailJS SDK (load first) -->
+<script src="https://cdn.emailjs.com/sdk/3.2.0/email.min.js"></script>
+
+<script>
+/* ====== CONFIG - replace with your EmailJS values ====== */
+const EMAILJS_USER_ID = 'WCxmw76Onz5EwVkrU';         // replace
+const EMAILJS_SERVICE_ID = 'service_wd029q5';   // replace
+const EMAILJS_TEMPLATE_ID = 'template_1batocb'; // replace
+
+/* Initialize EmailJS immediately after SDK loads */
+if (window.emailjs && typeof emailjs.init === 'function') {
+  try { emailjs.init(EMAILJS_USER_ID); console.log('EmailJS initialized'); }
+  catch(e){ console.warn('EmailJS init error', e); }
+} else {
+  // If SDK not yet available, attempt to init after short delay
+  (function waitInit(){
+    let attempts = 0;
+    const id = setInterval(()=>{
+      attempts++;
+      if(window.emailjs && typeof emailjs.init === 'function'){
+        try{ emailjs.init(EMAILJS_USER_ID); console.log('EmailJS initialized (delayed)'); }catch(e){ console.warn('EmailJS init error', e); }
+        clearInterval(id);
+      } else if(attempts>50){ clearInterval(id); console.warn('EmailJS SDK not available after waiting'); }
+    },100);
+  })();
+}
+
+/* ====== Slideshow logic ====== */
+const slides = Array.from(document.querySelectorAll('.slide'));
+const dotsWrap = document.getElementById('dots');
+let current = 0;
+let autoplay = true;
+let timer = null;
+
+function makeDots(){
+  slides.forEach((s,i)=>{
+    const d = document.createElement('div');
+    d.className = 'dot' + (i===0 ? ' active' : '');
+    d.setAttribute('data-index', i);
+    d.addEventListener('click', ()=> goTo(i));
+    dotsWrap.appendChild(d);
+  });
+}
+function updateSlides(){
+  slides.forEach((s,i)=>{
+    s.classList.toggle('active', i===current);
+    s.setAttribute('aria-hidden', i===current ? 'false' : 'true');
+  });
+  Array.from(dotsWrap.children).forEach((d,i)=> d.classList.toggle('active', i===current));
+}
+function goTo(i){
+  current = (i + slides.length) % slides.length;
+  updateSlides();
+  resetTimer();
+}
+function next(){ goTo(current+1) }
+function prev(){ goTo(current-1) }
+document.getElementById('next').addEventListener('click', next);
+document.getElementById('prev').addEventListener('click', prev);
+
+function startTimer(){
+  if(timer) clearInterval(timer);
+  timer = setInterval(()=> { if(autoplay) next(); }, 4200);
+}
+function resetTimer(){ startTimer() }
+
+makeDots();
+updateSlides();
+startTimer();
+
+const slideshowEl = document.querySelector('.slideshow');
+slideshowEl.addEventListener('mouseenter', ()=> autoplay = false);
+slideshowEl.addEventListener('mouseleave', ()=> autoplay = true);
+slideshowEl.addEventListener('touchstart', ()=> autoplay = false);
+slideshowEl.addEventListener('touchend', ()=> autoplay = true);
+
+/* ====== Modal & form logic ====== */
+const modalBackdrop = document.getElementById('modalBackdrop');
+const openRsvp = document.getElementById('openRsvp');
+const cancelBtn = document.getElementById('cancelBtn');
+const rsvpForm = document.getElementById('rsvpForm');
+const companionList = document.getElementById('companionList');
+const addCompanionBtn = document.getElementById('addCompanionBtn');
+const compCount = document.getElementById('compCount');
+const sendBtn = document.getElementById('sendBtn');
+const sendError = document.getElementById('sendError');
+let companions = [];
+
+function openForm(){ sendError.style.display='none'; sendError.textContent=''; modalBackdrop.style.display='flex'; modalBackdrop.setAttribute('aria-hidden','false'); setTimeout(()=> document.getElementById('guestName').focus(), 120); }
+function closeForm(){ modalBackdrop.style.display='none'; modalBackdrop.setAttribute('aria-hidden','true'); rsvpForm.reset(); companions=[]; renderCompanions(); sendError.style.display='none'; sendError.textContent=''; }
+
+openRsvp.addEventListener('click', openForm);
+cancelBtn.addEventListener('click', closeForm);
+addCompanionBtn.addEventListener('click', ()=> { companions.push(''); renderCompanions(); });
+
+function renderCompanions(){
+  companionList.innerHTML = '';
+  companions.forEach((c, idx)=>{
+    const row = document.createElement('div');
+    row.className = 'companion-row';
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.placeholder = 'Companion full name';
+    input.value = c;
+    input.addEventListener('input', (e)=> companions[idx] = e.target.value);
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.className = 'btn btn-cancel';
+    remove.textContent = 'Remove';
+    remove.addEventListener('click', ()=> { companions.splice(idx,1); renderCompanions(); });
+    row.appendChild(input);
+    row.appendChild(remove);
+    companionList.appendChild(row);
+  });
+  compCount.textContent = companions.length;
+}
+
+/* Helper: wait for EmailJS SDK to be ready */
+function waitForEmailJSSDK(timeout = 5000) {
+  return new Promise((resolve) => {
+    const start = Date.now();
+    (function check() {
+      if (window.emailjs && typeof emailjs.send === 'function') return resolve(true);
+      if (Date.now() - start > timeout) return resolve(false);
+      setTimeout(check, 100);
+    })();
+  });
+}
+
+/* ====== Send via EmailJS on submit (NO mailto fallback, NO popups) ====== */
+rsvpForm.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  sendError.style.display='none';
+  sendError.textContent='';
+
+  const name = document.getElementById('guestName').value.trim();
+  const phone = document.getElementById('guestPhone').value.trim();
+  const email = document.getElementById('guestEmail').value.trim();
+  const message = document.getElementById('message').value.trim();
+  const companionNames = companions.filter(x=>x.trim()).map(x=>x.trim());
+
+  if(!name || !phone){
+    sendError.textContent = 'Please fill required fields: name and phone.';
+    sendError.style.display = 'block';
+    return;
+  }
+
+  const templateParams = {
+    response_type: 'Going',
+    guest_name: name,
+    guest_phone: phone,
+    guest_email: email || '(none)',
+    guest_companions: companionNames.join('; ') || '(none)',
+    guest_message: message || '(none)',
+    location: 'Jazz Makati',
+    template_id: EMAILJS_TEMPLATE_ID
+  };
+
+  sendBtn.disabled = true;
+  sendBtn.textContent = 'Sending…';
+
+  try {
+    const sdkReady = await waitForEmailJSSDK(5000);
+    if(!sdkReady) throw new Error('EmailJS SDK not available');
+
+    // send via EmailJS
+    const result = await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
+    console.log('EmailJS send success', result);
+
+    // show success modal with guest name
+    document.getElementById('successName').textContent = name;
+    document.getElementById('successBackdrop').style.display = 'flex';
+    document.getElementById('successBackdrop').setAttribute('aria-hidden','false');
+    closeForm();
+  } catch (err) {
+    console.error('EmailJS send failed:', err);
+    // show inline error only
+    let msg = 'Sending failed. Please try again in a moment.';
+    if(err && err.status) msg += ` (status ${err.status})`;
+    if(err && err.text) msg += ` ${err.text}`;
+    sendError.textContent = msg;
+    sendError.style.display = 'block';
+  } finally {
+    sendBtn.disabled = false;
+    sendBtn.textContent = 'Send RSVP';
+  }
+});
+
+/* Not-going modal logic */
+const sadBackdrop = document.getElementById('sadBackdrop');
+const notGoingBtn = document.getElementById('notGoingBtn');
+const sadClose = document.getElementById('sadClose');
+const sendRegrets = document.getElementById('sendRegrets');
+
+notGoingBtn.addEventListener('click', ()=> { sadBackdrop.style.display='flex'; sadBackdrop.setAttribute('aria-hidden','false'); });
+sadClose.addEventListener('click', ()=> { sadBackdrop.style.display='none'; sadBackdrop.setAttribute('aria-hidden','true'); });
+sadBackdrop.addEventListener('click', (e)=> { if(e.target === sadBackdrop){ sadBackdrop.style.display='none'; sadBackdrop.setAttribute('aria-hidden','true'); } });
+
+sendRegrets.addEventListener('click', ()=>{
+  // explicit user action opens mail client for regrets only
+  const host = 'nadelacruz01@gmail.com';
+  const subject = encodeURIComponent('Regrets: Alice Dela Cruz — Unable to Attend');
+  const body = encodeURIComponent(`Hello,\n\nI am sorry I cannot attend the celebration for Alice Dela Cruz.\n\nName:\nShort message:\n`);
+  window.location.href = `mailto:${host}?subject=${subject}&body=${body}`;
+  sadBackdrop.style.display='none';
+  sadBackdrop.setAttribute('aria-hidden','true');
+});
+
+/* Success modal close */
+document.getElementById('successClose').addEventListener('click', ()=>{
+  document.getElementById('successBackdrop').style.display = 'none';
+  document.getElementById('successBackdrop').setAttribute('aria-hidden','true');
+});
+
+/* Accessibility & keyboard */
+document.addEventListener('keydown', (e)=>{
+  if(e.key === 'ArrowRight') next();
+  if(e.key === 'ArrowLeft') prev();
+  if(e.key === 'Escape'){
+    if(sadBackdrop.style.display === 'flex'){ sadBackdrop.style.display='none'; sadBackdrop.setAttribute('aria-hidden','true'); }
+    if(modalBackdrop.style.display === 'flex'){ closeForm(); }
+    if(document.getElementById('successBackdrop').style.display === 'flex'){ document.getElementById('successBackdrop').style.display='none'; document.getElementById('successBackdrop').setAttribute('aria-hidden','true'); }
+  }
+});
+</script>
+</body>
+</html>
