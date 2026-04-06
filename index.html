@@ -2,17 +2,19 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <title>Alice Dela Cruz — 75th Birthday RSVP</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg-cream:#efe6e2;
     --bg-wash:#f4e9e7;
-    /* More transparent main panel so background shows through */
-    --panel-rgba: rgba(246,240,239,0.65);
-    /* Modal slightly less transparent than stage for clarity */
+
+    /* Main panel: very strong transparency so background shows through */
+    --panel-rgba: rgba(246,240,239,0.08);
+    /* Modal remains readable */
     --modal-rgba: rgba(246,240,239,0.78);
+
     --burgundy:#6b0f1a;
     --gold:#caa43a;
     --rose:#c48b8b;
@@ -34,13 +36,14 @@
     display:flex;
     align-items:center;
     justify-content:center;
-    padding:env(safe-area-inset-top,20px) 20px env(safe-area-inset-bottom,20px);
+    padding:env(safe-area-inset-top,20px) 16px env(safe-area-inset-bottom,20px);
     -webkit-font-smoothing:antialiased;
     -moz-osx-font-smoothing:grayscale;
     min-height:100vh;
     -webkit-touch-callout:none;
     -webkit-user-select:none;
     touch-action:manipulation;
+    background-color: var(--bg-cream);
   }
 
   /* PNG texture layer (bg.png) placed in project root */
@@ -51,16 +54,17 @@
     height:100%;
     z-index:0;
     pointer-events:none;
-    opacity:0.92;
+    opacity:1;
     background-image: url('bg.png');
     background-size: cover;
-    background-position: center;
+    background-position: center 6%;
     background-repeat: no-repeat;
-    filter: blur(0.6px) saturate(1.02) contrast(0.98);
-    mix-blend-mode: multiply;
+    filter: blur(0.35px) saturate(1.06) contrast(1.04);
+    mix-blend-mode: normal;
+    transition: opacity .18s ease, background-position .18s ease;
   }
 
-  /* Main card: semi-transparent so background shows through, but text remains readable */
+  /* Main card: now strongly transparent so background shows through */
   .stage{
     width:100%;
     max-width:1100px;
@@ -74,8 +78,54 @@
     display:flex;
     min-height:520px;
     align-items:stretch;
-    border:1px solid rgba(107,15,26,0.08);
+    border:1px solid rgba(107,15,26,0.06);
     z-index:2;
+    margin:12px 0;
+  }
+
+  /* Ensure stage scrolls on very small screens instead of overflowing */
+  .stage-inner{
+    width:100%;
+    display:flex;
+    flex-direction:row;
+    align-items:stretch;
+    gap:0;
+  }
+
+  @media (max-width:520px){
+    :root{
+      --panel-rgba: rgba(246,240,239,0.06);
+      --modal-rgba: rgba(246,240,239,0.78);
+    }
+
+    .texture-bg{
+      opacity:1;
+      background-position: center 4%;
+      filter: blur(0.25px) saturate(1.08) contrast(1.06);
+    }
+
+    .texture-bg::after{
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      background:
+        radial-gradient(circle at 50% 6%,
+          rgba(255,255,255,0.62) 0%,
+          rgba(255,255,255,0.36) 14%,
+          rgba(255,255,255,0.00) 36%);
+      mix-blend-mode: normal;
+    }
+
+    /* Stack layout on small screens */
+    .stage{ min-height:auto; border-radius:12px; padding:0; }
+    .stage-inner{ flex-direction:column; }
+  }
+
+  @media (max-width:420px){
+    body{ padding-left:12px; padding-right:12px; }
+    .stage{ max-width:100%; margin:8px 0; border-radius:10px; }
   }
 
   @media (max-height:720px) and (max-width:520px){
@@ -87,44 +137,49 @@
   }
 
   .hero{
-    padding:44px 44px;
+    padding:36px 32px;
     flex:1;
-    min-width:300px;
+    min-width:260px;
     display:flex;
     flex-direction:column;
     justify-content:space-between;
-    gap:16px;
+    gap:12px;
     position:relative;
     z-index:3;
-    background:linear-gradient(180deg, rgba(244,233,231,0.28), transparent);
+    background:linear-gradient(180deg, rgba(244,233,231,0.12), transparent);
     pointer-events:auto;
   }
 
-  .eyebrow{ color:var(--muted); font-weight:700; letter-spacing:1px; font-size:13px; text-transform:uppercase; }
+  @media (max-width:420px){
+    .hero{ padding:18px 14px; gap:10px; }
+  }
+
+  .eyebrow{ color:var(--muted); font-weight:700; letter-spacing:1px; font-size:12px; text-transform:uppercase; }
   h1{
     margin:6px 0 0 0;
-    font-size:42px;
+    font-size:36px;
     line-height:1.02;
     letter-spacing:-0.4px;
     font-weight:800;
     color:var(--burgundy);
-    text-shadow: 0 1px 0 rgba(255,255,255,0.55);
+    text-shadow: 0 1px 0 rgba(255,255,255,0.6);
   }
-  .sub{ margin:10px 0 0 0; color:var(--muted); font-size:15px; max-width:52ch; font-weight:600; }
-  .whenwhere{ margin-top:12px; color:var(--muted); font-size:14px; font-weight:600; }
+  @media (max-width:420px){ h1{ font-size:26px; } }
 
-  /* Slightly stronger body text for readability over semi-transparent panel */
-  p, label, .whenwhere, .map-header { font-weight:600; color:var(--muted); }
+  .sub{ margin:8px 0 0 0; color:var(--muted); font-size:15px; max-width:64ch; font-weight:600; line-height:1.45; }
+  @media (max-width:420px){ .sub{ font-size:14px; } }
+
+  .whenwhere{ margin-top:12px; color:var(--muted); font-size:14px; font-weight:600; }
 
   .hero-actions{
     display:flex; align-items:center; justify-content:center; gap:12px;
-    margin:0 auto; width:100%; max-width:420px; padding:16px 8px; position:relative; z-index:6;
+    margin:0 auto; width:100%; max-width:420px; padding:12px 8px; position:relative; z-index:6;
   }
   .hero-actions-inner{ display:flex; gap:12px; align-items:center; justify-content:center; width:100% }
   .rsvp-main{
     background:linear-gradient(90deg,var(--gold),var(--rose));
     color:var(--burgundy);
-    padding:12px 22px;
+    padding:12px 18px;
     border-radius:999px;
     font-weight:800;
     font-size:16px;
@@ -148,30 +203,37 @@
 
   .slideshow{
     width:46%;
-    background:linear-gradient(180deg, rgba(244,233,231,0.45), rgba(255,250,249,0.45));
+    background:linear-gradient(180deg, rgba(244,233,231,0.12), rgba(255,250,249,0.12));
     position:relative;
     display:flex;
     align-items:center;
     justify-content:center;
-    padding:24px;
+    padding:18px;
     z-index:2;
-    min-width:260px;
+    min-width:220px;
     border-left:1px solid rgba(107,15,26,0.03);
   }
-  .slides{ width:100%; height:100%; position:relative; display:flex; align-items:center; justify-content:center; min-height:260px; padding-right:36px; }
-  .slide{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; transition:opacity .45s ease, transform .45s ease; opacity:0; transform:scale(.98); padding:20px; pointer-events:none; }
+
+  @media (max-width:520px){
+    .slideshow{ width:100%; padding:12px; border-left:none; border-top:1px solid rgba(107,15,26,0.03); }
+  }
+
+  .slides{ width:100%; height:100%; position:relative; display:flex; align-items:center; justify-content:center; min-height:220px; padding-right:12px; }
+  .slide{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; transition:opacity .45s ease, transform .45s ease; opacity:0; transform:scale(.98); padding:12px; pointer-events:none; }
   .slide.active{ opacity:1; transform:scale(1); pointer-events:auto; }
-  .img-wrap{ width:92%; height:72%; border-radius:12px; overflow:hidden; background:linear-gradient(135deg,#fff7f6,#f7eceb); display:flex; align-items:center; justify-content:center; border:1px solid rgba(107,15,26,0.04); box-shadow:0 18px 40px rgba(107,15,26,0.06), inset 0 1px 0 rgba(255,255,255,0.6); min-height:200px; }
+  .img-wrap{ width:92%; height:72%; border-radius:12px; overflow:hidden; background:linear-gradient(135deg,#fff7f6,#f7eceb); display:flex; align-items:center; justify-content:center; border:1px solid rgba(107,15,26,0.04); box-shadow:0 18px 40px rgba(107,15,26,0.06), inset 0 1px 0 rgba(255,255,255,0.6); min-height:180px; }
   .img-wrap img{ width:100%; height:100%; object-fit:cover; display:block; }
 
-  .controls{ position:absolute; right:18px; bottom:18px; display:flex; gap:10px; align-items:center; z-index:3 }
+  .controls{ position:absolute; right:12px; bottom:12px; display:flex; gap:8px; align-items:center; z-index:3 }
   .dot{ width:10px; height:10px; border-radius:999px; background:rgba(107,15,26,0.12); cursor:pointer }
   .dot.active{ background:var(--gold) }
   .arrow{ background:var(--panel-rgba); border:1px solid rgba(107,15,26,0.06); color:var(--burgundy); padding:8px; border-radius:10px; cursor:pointer; margin-left:8px; box-shadow:0 6px 18px rgba(107,15,26,0.06); }
 
-  .map-wrap{ position:relative; margin-top:14px; z-index:4 }
+  .map-wrap{ position:relative; margin-top:12px; z-index:4 }
   .map-header{ color:var(--muted); margin-bottom:8px; font-size:14px }
   iframe.map-iframe{ width:100%; height:220px; border:0; display:block; pointer-events:none; touch-action:none; background:linear-gradient(180deg,#fff,#f8f4f3); border-radius:10px; border:1px solid rgba(107,15,26,0.04); }
+
+  @media (max-width:420px){ iframe.map-iframe{ height:150px; } }
 
   .map-overlay{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:transparent; cursor:pointer; z-index:25; -webkit-tap-highlight-color: transparent; }
   .map-overlay .hint{ background:var(--panel-rgba); color:var(--burgundy); padding:8px 12px; border-radius:999px; font-size:13px; border:1px solid rgba(107,15,26,0.06); box-shadow:0 6px 18px rgba(107,15,26,0.06); }
@@ -194,12 +256,15 @@
   .inline-error{ color:#8B1E1E; background:rgba(255,200,200,0.12); padding:10px; border-radius:8px; margin-top:8px; display:none }
   .success-modal .name{ font-weight:800; color:var(--gold); margin-top:8px }
 
+  /* helper to hide form rows when opening regret-only view */
+  .hidden { display:none !important; }
+
   @media (min-width:521px) and (max-width:1024px){
     .stage{ flex-direction:row; align-items:flex-start }
-    .hero{ width:54%; padding:36px 28px }
-    .slideshow{ width:46%; padding:20px }
-    .slides{ min-height:300px; padding-right:48px }
-    .img-wrap{ min-height:240px }
+    .hero{ width:54%; padding:28px 24px }
+    .slideshow{ width:46%; padding:18px }
+    .slides{ min-height:260px; padding-right:24px }
+    .img-wrap{ min-height:220px }
     .hero-actions{ margin-top:8px }
     iframe.map-iframe{ pointer-events:none }
     .map-overlay{ display:flex }
@@ -208,13 +273,13 @@
 
   @media (max-width:520px){
     .stage{ flex-direction:column; min-height:auto }
-    .slideshow{ width:100%; padding:18px; border-left:none; border-top:1px solid rgba(107,15,26,0.03) }
-    .hero{ padding:28px 20px }
-    h1{ font-size:32px }
+    .slideshow{ width:100%; padding:12px; border-left:none; border-top:1px solid rgba(107,15,26,0.03) }
+    .hero{ padding:18px 16px }
+    h1{ font-size:28px }
     .hero-actions{ margin-top:8px }
-    .rsvp-main{ font-size:15px; padding:10px 16px }
-    .slides{ min-height:220px }
-    .img-wrap{ min-height:200px; height:auto }
+    .rsvp-main{ font-size:15px; padding:10px 14px }
+    .slides{ min-height:200px }
+    .img-wrap{ min-height:160px; height:auto }
     .hero-actions-inner{ flex-direction:column-reverse; gap:10px }
     .rsvp-secondary{ width:100% }
     .rsvp-main{ width:100% }
@@ -230,75 +295,89 @@
 <div class="texture-bg" aria-hidden="true"></div>
 
 <div class="stage" role="main" aria-labelledby="heroTitle">
-  <div class="hero" aria-hidden="false">
-    <div class="hero-top">
-      <div class="eyebrow">Celebration</div>
-      <h1 id="heroTitle">Alice Dela Cruz — 75th Birthday</h1>
-      <p class="sub">Join us in honoring a life of love, wisdom, and family. Please let us know if you can attend — your presence and warm wishes mean the world.</p>
-      <div class="whenwhere"><strong>When</strong>: To be announced &nbsp; • &nbsp; <strong>Where</strong>: Jazz Makati</div>
+  <div class="stage-inner">
+    <div class="hero" aria-hidden="false">
+      <div class="hero-top">
+        <div class="eyebrow">Celebration</div>
+        <h1 id="heroTitle">Alice Dela Cruz — 75th Birthday</h1>
 
-      <div class="map-wrap" aria-hidden="false">
-        <div class="map-header"><strong>Location</strong>: Jazz Makati — interactive map</div>
-        <iframe class="map-iframe" title="Jazz Makati map" src="https://www.google.com/maps?q=Jazz+Makati&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-        <div class="map-overlay" id="mapOverlay" role="button" aria-label="Enable map interaction" tabindex="0">
-          <div class="hint">Tap to enable map</div>
+        <!-- Replaced content per your screenshot/text -->
+        <p class="sub">Hello! We’re excited to have you join us.</p>
+        <p class="sub">Kindly note that we have allotted one seat per guest, or two seats if attending with a spouse.</p>
+        <p class="sub">Please RSVP on or before April 30. If we don’t receive your response by then, we’ll assume you’re unavailable and may not be able to reserve a seat for you.</p>
+        <p class="sub">Thank you for your understanding.</p>
+        
+        <div class="whenwhere"><strong>When</strong>: To be announced &nbsp; • &nbsp; <strong>Where</strong>: Jazz Makati</div>
+
+        <div class="map-wrap" aria-hidden="false">
+          <div class="map-header"><strong>Location</strong>: Jazz Makati — interactive map</div>
+          <iframe class="map-iframe" title="Jazz Makati map" src="https://www.google.com/maps?q=Jazz+Makati&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+          <div class="map-overlay" id="mapOverlay" role="button" aria-label="Enable map interaction" tabindex="0">
+            <div class="hint">Tap to enable map</div>
+          </div>
         </div>
       </div>
+
+      <div class="hero-actions" aria-hidden="false">
+        <div class="hero-actions-inner">
+          <button class="rsvp-main" id="openRsvp">RSVP</button>
+          <button class="rsvp-secondary" id="notGoingBtn">Not going</button>
+        </div>
+      </div>
+
+      <div style="height:8px" aria-hidden="true"></div>
     </div>
 
-    <div class="hero-actions" aria-hidden="false">
-      <div class="hero-actions-inner">
-        <button class="rsvp-main" id="openRsvp">RSVP</button>
-        <button class="rsvp-secondary" id="notGoingBtn">Not going</button>
+    <div class="slideshow" aria-label="Photo slideshow placeholder">
+      <div class="slides" id="slides">
+        <div class="slide active" data-index="0" aria-hidden="false">
+          <div class="img-wrap"><img src="new1.jpg" alt="Slide 1" loading="lazy"></div>
+        </div>
+        <div class="slide" data-index="1" aria-hidden="true">
+          <div class="img-wrap"><img src="new2.jpg" alt="Slide 2" loading="lazy"></div>
+        </div>
+        <div class="slide" data-index="2" aria-hidden="true">
+          <div class="img-wrap"><img src="new3.jpg" alt="Slide 3" loading="lazy"></div>
+        </div>
       </div>
-    </div>
 
-    <div style="height:8px" aria-hidden="true"></div>
-  </div>
-
-  <div class="slideshow" aria-label="Photo slideshow placeholder">
-    <div class="slides" id="slides">
-      <div class="slide active" data-index="0" aria-hidden="false">
-        <div class="img-wrap"><img src="new1.jpg" alt="Slide 1" loading="lazy"></div>
+      <div class="controls" aria-hidden="false">
+        <div id="dots" style="display:flex;gap:8px;align-items:center"></div>
+        <button class="arrow" id="prev" aria-label="Previous slide">◀</button>
+        <button class="arrow" id="next" aria-label="Next slide">▶</button>
       </div>
-      <div class="slide" data-index="1" aria-hidden="true">
-        <div class="img-wrap"><img src="new2.jpg" alt="Slide 2" loading="lazy"></div>
-      </div>
-      <div class="slide" data-index="2" aria-hidden="true">
-        <div class="img-wrap"><img src="new3.jpg" alt="Slide 3" loading="lazy"></div>
-      </div>
-    </div>
-
-    <div class="controls" aria-hidden="false">
-      <div id="dots" style="display:flex;gap:8px;align-items:center"></div>
-      <button class="arrow" id="prev" aria-label="Previous slide">◀</button>
-      <button class="arrow" id="next" aria-label="Next slide">▶</button>
     </div>
   </div>
 </div>
 
-<!-- Going modal -->
+<!-- Going modal (also reused for regrets with minimal fields) -->
 <div class="backdrop" id="modalBackdrop" aria-hidden="true" role="dialog" aria-modal="true">
   <div class="modal" role="document" id="goingModal">
     <h3 id="modalTitle">RSVP — Going</h3>
-    <div class="small">Please share your details so we can prepare seating and refreshments.</div>
+    <div class="small" id="modalSubtitle">Please share your details so we can prepare seating and refreshments.</div>
     <form id="rsvpForm" autocomplete="on">
-      <div class="form-row">
+      <div class="form-row" id="rowName">
         <div style="flex:1;min-width:160px">
           <label for="guestName"><strong>Full name</strong></label>
           <input id="guestName" name="guestName" type="text" required placeholder="Full name" autocomplete="name">
         </div>
+      </div>
+
+      <div class="form-row" id="rowPhone">
         <div style="flex:1;min-width:160px">
           <label for="guestPhone"><strong>Phone number</strong></label>
           <input id="guestPhone" name="guestPhone" type="tel" required placeholder="+63 9xx xxx xxxx" autocomplete="tel">
         </div>
       </div>
 
-      <div class="form-row">
+      <div class="form-row" id="rowEmail">
         <div style="flex:1;min-width:160px">
           <label for="guestEmail"><strong>Email (optional)</strong></label>
           <input id="guestEmail" name="guestEmail" type="email" placeholder="you@example.com" autocomplete="email">
         </div>
+      </div>
+
+      <div class="form-row" id="rowCompanions">
         <div style="flex:1;min-width:160px">
           <label><strong>Companions</strong></label>
           <div style="display:flex;gap:8px;align-items:center">
@@ -327,7 +406,7 @@
 <div class="backdrop" id="successBackdrop" aria-hidden="true" role="dialog" aria-modal="true">
   <div class="modal success-modal" role="document" aria-labelledby="successTitle">
     <h3 id="successTitle">Thank you</h3>
-    <div class="small">Your RSVP has been sent (or a draft opened if SDK unavailable).</div>
+    <div class="small">Your RSVP has been sent.</div>
     <div style="margin-top:12px">We appreciate your response,</div>
     <div class="name" id="successName" style="font-size:18px;margin-top:8px;color:var(--gold)"></div>
     <div style="display:flex;justify-content:flex-end;margin-top:18px">
@@ -344,11 +423,11 @@
         <div class="sad-emoji">😔</div>
         <h3 id="sadTitle">We’ll miss you</h3>
         <p style="color:var(--muted);line-height:1.5">
-          It truly saddens us to hear you won’t be able to join the celebration for our beloved grandma, Alice Dela Cruz.
+          It truly saddens us to hear you won’t be able to join the celebration for our beloved Alice Dela Cruz.
           Your presence will be missed, and your warm thoughts and prayers mean so much to the family.
           If you’d like, please send a short message or regrets — we’ll make sure your kind words are shared.
         </p>
-        <div class="sad-actions">
+        <div class="sad-actions" style="display:flex;gap:8px;margin-top:12px">
           <button class="btn btn-cancel" id="sadClose">Close</button>
           <button class="btn btn-send" id="sendRegrets">Send regrets by email</button>
         </div>
@@ -422,7 +501,6 @@ const mapOverlay = document.getElementById('mapOverlay');
 const mapIframe = document.querySelector('iframe.map-iframe');
 
 if (mapOverlay && mapIframe) {
-  // require explicit tap to enable the map (tablets included)
   mapOverlay.addEventListener('click', (e) => {
     e.stopPropagation();
     mapIframe.style.pointerEvents = 'auto';
@@ -454,15 +532,89 @@ const addCompanionBtn = document.getElementById('addCompanionBtn');
 const compCount = document.getElementById('compCount');
 const sendBtn = document.getElementById('sendBtn');
 const sendError = document.getElementById('sendError');
+
+const rowPhone = document.getElementById('rowPhone');
+const rowEmail = document.getElementById('rowEmail');
+const rowCompanions = document.getElementById('rowCompanions');
+const rowName = document.getElementById('rowName');
+const modalTitle = document.getElementById('modalTitle');
+const modalSubtitle = document.getElementById('modalSubtitle');
+
 let companions = [];
+let companionClicks = 0;
+const MAX_COMPANIONS = 2;
 
-function openForm(){ sendError.style.display='none'; sendError.textContent=''; modalBackdrop.style.display='flex'; modalBackdrop.setAttribute('aria-hidden','false'); setTimeout(()=> document.getElementById('guestName').focus(), 120); }
-function closeForm(){ modalBackdrop.style.display='none'; modalBackdrop.setAttribute('aria-hidden','true'); rsvpForm.reset(); companions=[]; renderCompanions(); sendError.style.display='none'; sendError.textContent=''; }
+/* Open full RSVP form */
+function openForm(){ 
+  restoreFullForm();
+  sendError.style.display='none'; sendError.textContent='';
+  modalBackdrop.style.display='flex'; modalBackdrop.setAttribute('aria-hidden','false'); 
+  setTimeout(()=> document.getElementById('guestName').focus(), 120); 
+}
 
-openRsvp.addEventListener('click', openForm);
-cancelBtn.addEventListener('click', closeForm);
-addCompanionBtn.addEventListener('click', ()=> { companions.push(''); renderCompanions(); });
+/* Close and reset */
+function closeForm(){ 
+  modalBackdrop.style.display='none'; modalBackdrop.setAttribute('aria-hidden','true'); 
+  rsvpForm.reset(); companions=[]; companionClicks=0; renderCompanions(); enableAddCompanion(true);
+  restoreFullForm();
+  sendError.style.display='none'; sendError.textContent=''; 
+}
 
+/* Restore full RSVP form (show all fields) */
+function restoreFullForm(){
+  modalTitle.textContent = 'RSVP — Going';
+  modalSubtitle.textContent = 'Please share your details so we can prepare seating and refreshments.';
+  rowPhone.classList.remove('hidden');
+  rowEmail.classList.remove('hidden');
+  rowCompanions.classList.remove('hidden');
+  document.getElementById('guestPhone').required = true;
+}
+
+/* Open regret-only form (name + message only) */
+function openRegretForm(prefillName = '') {
+  // hide phone, email, companions
+  modalTitle.textContent = 'Regrets — Unable to Attend';
+  modalSubtitle.textContent = 'Please leave your name and a short message if you wish.';
+  rowPhone.classList.add('hidden');
+  rowEmail.classList.add('hidden');
+  rowCompanions.classList.add('hidden');
+  document.getElementById('guestPhone').required = false;
+
+  // clear companions and companion controls
+  companions = []; companionClicks = 0; renderCompanions(); enableAddCompanion(true);
+
+  // prefill name if provided
+  document.getElementById('guestName').value = prefillName || '';
+  document.getElementById('message').value = '';
+
+  // show modal
+  sendError.style.display='none'; sendError.textContent='';
+  modalBackdrop.style.display='flex'; modalBackdrop.setAttribute('aria-hidden','false');
+  setTimeout(()=> document.getElementById('guestName').focus(), 120);
+}
+
+/* Add companion logic: limit to 2 clicks only, disable after 2 */
+function enableAddCompanion(enable){
+  addCompanionBtn.disabled = !enable;
+  addCompanionBtn.setAttribute('aria-disabled', String(!enable));
+  if(!enable) addCompanionBtn.classList.add('hidden');
+  else addCompanionBtn.classList.remove('hidden');
+}
+
+addCompanionBtn.addEventListener('click', ()=> {
+  // Only allow up to MAX_COMPANIONS companion additions
+  if (companionClicks >= MAX_COMPANIONS) return;
+  companionClicks++;
+  companions.push(''); // add empty companion name input
+  renderCompanions();
+  compCount.textContent = companions.length;
+  if (companionClicks >= MAX_COMPANIONS) {
+    // disable button after two clicks
+    enableAddCompanion(false);
+  }
+});
+
+/* Render companion inputs (names only, no notes) */
 function renderCompanions(){
   companionList.innerHTML = '';
   companions.forEach((c, idx)=>{
@@ -477,7 +629,14 @@ function renderCompanions(){
     remove.type = 'button';
     remove.className = 'btn btn-cancel';
     remove.textContent = 'Remove';
-    remove.addEventListener('click', ()=> { companions.splice(idx,1); renderCompanions(); });
+    remove.addEventListener('click', ()=> { 
+      companions.splice(idx,1); 
+      // when removing, allow add button again if below limit
+      companionClicks = Math.max(0, companionClicks - 1);
+      renderCompanions(); 
+      compCount.textContent = companions.length;
+      if (companionClicks < MAX_COMPANIONS) enableAddCompanion(true);
+    });
     row.appendChild(input);
     row.appendChild(remove);
     companionList.appendChild(row);
@@ -519,16 +678,22 @@ rsvpForm.addEventListener('submit', async (e)=>{
   const message = document.getElementById('message').value.trim();
   const companionNames = companions.filter(x=>x.trim()).map(x=>x.trim());
 
-  if(!name || !phone){
-    sendError.textContent = 'Please fill required fields: name and phone.';
+  // If phone row is hidden (regret-only), phone is optional
+  const phoneRequired = !rowPhone.classList.contains('hidden');
+
+  if(!name || (phoneRequired && !phone)){
+    sendError.textContent = 'Please fill required fields: name' + (phoneRequired ? ' and phone.' : '.');
     sendError.style.display = 'block';
     return;
   }
 
+  // Determine response type from modal title
+  const responseType = modalTitle.textContent.toLowerCase().includes('regret') ? 'Regrets' : 'Going';
+
   const templateParams = {
-    response_type: 'Going',
+    response_type: responseType,
     guest_name: name,
-    guest_phone: phone,
+    guest_phone: phone || '(none)',
     guest_email: email || '(none)',
     guest_companions: companionNames.join('; ') || '(none)',
     guest_message: message || '(none)',
@@ -557,7 +722,10 @@ rsvpForm.addEventListener('submit', async (e)=>{
 
     rsvpForm.reset();
     companions = [];
+    companionClicks = 0;
     renderCompanions();
+    enableAddCompanion(true);
+    restoreFullForm();
   } catch (err) {
     console.warn('EmailJS send failed or unavailable, falling back to mailto:', err);
 
@@ -566,11 +734,11 @@ rsvpForm.addEventListener('submit', async (e)=>{
     modalBackdrop.setAttribute('aria-hidden','true');
 
     const to = 'nadelacruz01@gmail.com';
-    const subject = `RSVP: Alice Dela Cruz — Going (${name})`;
+    const subject = `${responseType}: Alice Dela Cruz — ${responseType === 'Going' ? 'Going' : 'Unable to Attend'} (${name})`;
     const lines = [
-      `Response: Going`,
+      `Response: ${responseType}`,
       `Name: ${name}`,
-      `Phone: ${phone}`,
+      `Phone: ${phone || '(none)'}`,
       `Email: ${email || '(none)'}`,
       `Companions: ${companionNames.length ? companionNames.join('; ') : '(none)'}`,
       `Message: ${message || '(none)'}`,
@@ -586,7 +754,10 @@ rsvpForm.addEventListener('submit', async (e)=>{
 
     rsvpForm.reset();
     companions = [];
+    companionClicks = 0;
     renderCompanions();
+    enableAddCompanion(true);
+    restoreFullForm();
   } finally {
     sendBtn.disabled = false;
     sendBtn.textContent = 'Send RSVP';
@@ -603,13 +774,12 @@ notGoingBtn.addEventListener('click', ()=> { sadBackdrop.style.display='flex'; s
 sadClose.addEventListener('click', ()=> { sadBackdrop.style.display='none'; sadBackdrop.setAttribute('aria-hidden','true'); });
 sadBackdrop.addEventListener('click', (e)=> { if(e.target === sadBackdrop){ sadBackdrop.style.display='none'; sadBackdrop.setAttribute('aria-hidden','true'); } });
 
+/* When user clicks "Send regrets by email" open the RSVP modal but only name + message */
 sendRegrets.addEventListener('click', ()=>{
-  const host = 'nadelacruz01@gmail.com';
-  const subject = 'Regrets: Alice Dela Cruz — Unable to Attend';
-  const body = `Hello,\n\nI am sorry I cannot attend the celebration for Alice Dela Cruz.\n\nName:\nShort message:\n\nSent from RSVP page.`;
-  window.location.href = `mailto:${encodeURIComponent(host)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   sadBackdrop.style.display='none';
   sadBackdrop.setAttribute('aria-hidden','true');
+  // open regret-only form; leave name blank for user to fill or prefill if desired
+  openRegretForm('');
 });
 
 /* Success modal close: also ensure RSVP modal is closed and view returns to main display */
@@ -627,11 +797,18 @@ document.getElementById('successClose').addEventListener('click', ()=>{
   // reset form (already reset on send, but keep safe)
   rsvpForm.reset();
   companions = [];
+  companionClicks = 0;
   renderCompanions();
+  enableAddCompanion(true);
+  restoreFullForm();
 
   // return focus to main RSVP button for accessibility
   setTimeout(()=> { openRsvp.focus && openRsvp.focus(); }, 60);
 });
+
+/* Wire up open/cancel buttons */
+openRsvp.addEventListener('click', openForm);
+cancelBtn.addEventListener('click', closeForm);
 
 /* Accessibility & keyboard */
 document.addEventListener('keydown', (e)=>{
