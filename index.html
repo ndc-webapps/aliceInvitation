@@ -9,18 +9,13 @@
   :root{
     --bg-cream:#efe6e2;
     --bg-wash:#f4e9e7;
-
-    /* Main panel: very strong transparency so background shows through */
     --panel-rgba: rgba(246,240,239,0.08);
-    /* Modal remains readable */
-    --modal-rgba: rgba(246,240,239,0.78);
-
+    --modal-rgba: rgba(246,240,239,0.96);
     --burgundy:#6b0f1a;
     --gold:#caa43a;
     --rose:#c48b8b;
     --muted:#8b6f66;
     --shadow: rgba(11,7,5,0.08);
-    --white-soft:#fff7f6;
   }
 
   *{box-sizing:border-box}
@@ -34,9 +29,9 @@
       linear-gradient(180deg,var(--bg-cream) 0%, var(--bg-wash) 60%);
     color:var(--burgundy);
     display:flex;
-    align-items:center;
+    align-items:flex-start;
     justify-content:center;
-    padding:env(safe-area-inset-top,20px) 16px env(safe-area-inset-bottom,20px);
+    padding:env(safe-area-inset-top,20px) 16px calc(env(safe-area-inset-bottom,20px) + 8px);
     -webkit-font-smoothing:antialiased;
     -moz-osx-font-smoothing:grayscale;
     min-height:100vh;
@@ -46,7 +41,7 @@
     background-color: var(--bg-cream);
   }
 
-  /* PNG texture layer (bg.png) placed in project root */
+  /* subtle full-screen background layer */
   .texture-bg{
     position:fixed;
     inset:0;
@@ -54,17 +49,30 @@
     height:100%;
     z-index:0;
     pointer-events:none;
-    opacity:1;
-    background-image: url('bg.png');
+    opacity:0.98;
+    background-image: url('bgnew.png');
     background-size: cover;
     background-position: center 6%;
     background-repeat: no-repeat;
     filter: blur(0.35px) saturate(1.06) contrast(1.04);
-    mix-blend-mode: normal;
-    transition: opacity .18s ease, background-position .18s ease;
   }
 
-  /* Main card: now strongly transparent so background shows through */
+  /* Inline SVG balloons element (always present and visible on mobile)
+     Positioned above the subtle texture but below the main stage so it "peeks" at the top.
+     Using inline SVG ensures the balloons are visible on all devices without external images. */
+  .balloons-svg{
+    position:fixed;
+    left:50%;
+    transform:translateX(-50%);
+    top: calc(env(safe-area-inset-top, 12px) - 28px);
+    width:320px;
+    height:140px;
+    z-index:1;
+    pointer-events:none;
+    opacity:0.95;
+  }
+
+  /* Single container (one "table") */
   .stage{
     width:100%;
     max-width:1100px;
@@ -72,242 +80,259 @@
     overflow:visible;
     position:relative;
     box-shadow:0 30px 60px var(--shadow);
-    background: var(--panel-rgba);
-    backdrop-filter: blur(6px) saturate(1.05);
-    -webkit-backdrop-filter: blur(6px) saturate(1.05);
-    display:flex;
-    min-height:520px;
-    align-items:stretch;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.363), rgba(255,255,255,0.88));
+    padding:0;
     border:1px solid rgba(107,15,26,0.06);
-    z-index:2;
     margin:12px 0;
+    z-index:3; /* above balloons and texture */
   }
 
-  /* Ensure stage scrolls on very small screens instead of overflowing */
   .stage-inner{
-    width:100%;
     display:flex;
-    flex-direction:row;
-    align-items:stretch;
-    gap:0;
-  }
-
-  @media (max-width:520px){
-    :root{
-      --panel-rgba: rgba(246,240,239,0.06);
-      --modal-rgba: rgba(246,240,239,0.78);
-    }
-
-    .texture-bg{
-      opacity:1;
-      background-position: center 4%;
-      filter: blur(0.25px) saturate(1.08) contrast(1.06);
-    }
-
-    .texture-bg::after{
-      content: "";
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      z-index: 1;
-      background:
-        radial-gradient(circle at 50% 6%,
-          rgba(255,255,255,0.62) 0%,
-          rgba(255,255,255,0.36) 14%,
-          rgba(255,255,255,0.00) 36%);
-      mix-blend-mode: normal;
-    }
-
-    /* Stack layout on small screens */
-    .stage{ min-height:auto; border-radius:12px; padding:0; }
-    .stage-inner{ flex-direction:column; }
-  }
-
-  @media (max-width:420px){
-    body{ padding-left:12px; padding-right:12px; }
-    .stage{ max-width:100%; margin:8px 0; border-radius:10px; }
-  }
-
-  @media (max-height:720px) and (max-width:520px){
-    .stage{
-      max-height: calc(100vh - env(safe-area-inset-top,20px) - env(safe-area-inset-bottom,20px));
-      overflow:auto;
-      -webkit-overflow-scrolling: touch;
-    }
+    justify-content:center;
+    align-items:flex-start;
+    position:relative;
+    min-height:520px;
+    padding:18px;
   }
 
   .hero{
-    padding:36px 32px;
-    flex:1;
-    min-width:260px;
+    width:100%;
+    max-width:760px;
+    padding:28px;
+    background:linear-gradient(180deg, rgba(244,233,231,0.02), transparent);
+    border-radius:12px;
+    box-sizing:border-box;
+    position:relative;
+    padding-top: calc(env(safe-area-inset-top, 12px) + 22px);
+    z-index:4;
+  }
+
+  .eyebrow{ color:var(--muted); font-weight:700; letter-spacing:1px; font-size:12px; text-transform:uppercase; margin:0 0 6px 0; }
+  h1{ margin:0 0 12px 0; font-size:30px; line-height:1.02; font-weight:800; color:var(--burgundy); }
+  .sub{ margin:8px 0 0 0; color:var(--muted); font-size:15px; max-width:64ch; font-weight:600; line-height:1.45; }
+
+  /* Gallery */
+  .gallery{
+    display:flex;
+    gap:12px;
+    align-items:stretch;
+    margin:12px 0;
+    width:100%;
+    box-sizing:border-box;
+  }
+
+  .thumbs{
     display:flex;
     flex-direction:column;
-    justify-content:space-between;
-    gap:12px;
-    position:relative;
-    z-index:3;
-    background:linear-gradient(180deg, rgba(244,233,231,0.12), transparent);
-    pointer-events:auto;
+    gap:8px;
+    width:64px;
+    flex:0 0 64px;
+    align-items:center;
   }
-
-  @media (max-width:420px){
-    .hero{ padding:18px 14px; gap:10px; }
-  }
-
-  .eyebrow{ color:var(--muted); font-weight:700; letter-spacing:1px; font-size:12px; text-transform:uppercase; }
-  h1{
-    margin:6px 0 0 0;
-    font-size:36px;
-    line-height:1.02;
-    letter-spacing:-0.4px;
-    font-weight:800;
-    color:var(--burgundy);
-    text-shadow: 0 1px 0 rgba(255,255,255,0.6);
-  }
-  @media (max-width:420px){ h1{ font-size:26px; } }
-
-  .sub{ margin:8px 0 0 0; color:var(--muted); font-size:15px; max-width:64ch; font-weight:600; line-height:1.45; }
-  @media (max-width:420px){ .sub{ font-size:14px; } }
-
-  .whenwhere{ margin-top:12px; color:var(--muted); font-size:14px; font-weight:600; }
-
-  .hero-actions{
-    display:flex; align-items:center; justify-content:center; gap:12px;
-    margin:0 auto; width:100%; max-width:420px; padding:12px 8px; position:relative; z-index:6;
-  }
-  .hero-actions-inner{ display:flex; gap:12px; align-items:center; justify-content:center; width:100% }
-  .rsvp-main{
-    background:linear-gradient(90deg,var(--gold),var(--rose));
-    color:var(--burgundy);
-    padding:12px 18px;
-    border-radius:999px;
-    font-weight:800;
-    font-size:16px;
-    border:none;
+  .thumb{
+    width:56px;
+    height:56px;
+    border-radius:8px;
+    overflow:hidden;
+    border:1px solid rgba(107,15,26,0.06);
+    box-shadow:0 6px 14px rgba(11,7,5,0.04);
     cursor:pointer;
-    flex:1;
-    min-width:120px;
-    box-shadow:0 8px 20px rgba(202,164,58,0.12);
-    touch-action:manipulation;
-  }
-  .rsvp-secondary{
-    background:transparent;
-    border:1px solid rgba(107,15,26,0.08);
-    color:var(--burgundy);
-    padding:10px 14px;
-    border-radius:10px;
-    cursor:pointer;
-    flex:0 0 auto;
-    touch-action:manipulation;
-  }
-
-  .slideshow{
-    width:46%;
-    background:linear-gradient(180deg, rgba(244,233,231,0.12), rgba(255,250,249,0.12));
-    position:relative;
+    transition:transform .12s ease, box-shadow .12s ease;
+    background:#fff;
     display:flex;
     align-items:center;
     justify-content:center;
-    padding:18px;
-    z-index:2;
-    min-width:220px;
-    border-left:1px solid rgba(107,15,26,0.03);
+  }
+  .thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .thumb.active{ transform:translateY(-4px); box-shadow:0 12px 28px rgba(11,7,5,0.08); border-color:var(--gold); }
+
+  .main-slide{
+    flex:1 1 auto;
+    border-radius:10px;
+    overflow:hidden;
+    min-height:220px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:linear-gradient(135deg,#fff7f6,#f7eceb);
+    border:1px solid rgba(107,15,26,0.04);
+    box-shadow:0 18px 40px rgba(107,15,26,0.06);
+  }
+  .main-slide img{ width:100%; height:100%; object-fit:cover; display:block; object-position:center top; }
+
+  /* Desktop */
+  @media (min-width:900px){
+    .hero{ padding:32px; }
+    .thumbs{ width:72px; flex:0 0 72px; }
+    .thumb{ width:64px; height:64px; border-radius:10px; }
+    .main-slide{
+      max-width:420px;
+      max-height:320px;
+      margin-left:10px;
+      min-height:320px;
+    }
+    .main-slide img{ object-position:center center; }
+    .balloons-svg{ width:420px; height:200px; top: calc(env(safe-area-inset-top, 12px) - 44px); }
   }
 
+  /* Tablet */
+  @media (min-width:521px) and (max-width:899px){
+    .hero{ padding:24px; max-width:720px; }
+    .thumbs{ width:64px; flex:0 0 64px; }
+    .thumb{ width:56px; height:56px; }
+    .main-slide{ max-width:380px; max-height:300px; min-height:300px; margin-left:10px; }
+    .balloons-svg{ width:360px; height:160px; top: calc(env(safe-area-inset-top, 12px) - 40px); }
+  }
+
+  /* Mobile */
   @media (max-width:520px){
-    .slideshow{ width:100%; padding:12px; border-left:none; border-top:1px solid rgba(107,15,26,0.03); }
+    body{ align-items:flex-start; }
+    .stage-inner{ padding-top: calc(env(safe-area-inset-top, 12px) + 8px); }
+    .hero{ padding:14px; max-width:100%; padding-top: calc(env(safe-area-inset-top, 12px) + 22px); }
+    h1{ font-size:20px; }
+    .gallery{ flex-direction:column; gap:10px; }
+    .thumbs{
+      width:100%;
+      flex-direction:row;
+      justify-content:flex-start;
+      overflow-x:auto;
+      padding-bottom:6px;
+      gap:8px;
+    }
+    .thumb{ width:120px; height:88px; flex:0 0 auto; border-radius:10px; }
+    .main-slide{ min-height:200px; border-radius:10px; box-shadow:none; background:#fff; }
+    .main-slide img{ object-position:center top; }
+    .balloons-svg{ width:320px; height:140px; top: calc(env(safe-area-inset-top, 12px) - 28px); }
   }
 
-  .slides{ width:100%; height:100%; position:relative; display:flex; align-items:center; justify-content:center; min-height:220px; padding-right:12px; }
-  .slide{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; transition:opacity .45s ease, transform .45s ease; opacity:0; transform:scale(.98); padding:12px; pointer-events:none; }
-  .slide.active{ opacity:1; transform:scale(1); pointer-events:auto; }
-  .img-wrap{ width:92%; height:72%; border-radius:12px; overflow:hidden; background:linear-gradient(135deg,#fff7f6,#f7eceb); display:flex; align-items:center; justify-content:center; border:1px solid rgba(107,15,26,0.04); box-shadow:0 18px 40px rgba(107,15,26,0.06), inset 0 1px 0 rgba(255,255,255,0.6); min-height:180px; }
-  .img-wrap img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .info-tray{
+    display:flex;
+    gap:12px;
+    align-items:center;
+    margin-top:12px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.36), rgba(255,250,249,0.18));
+    padding:10px;
+    border-radius:12px;
+    border:1px solid rgba(107,15,26,0.06);
+    box-shadow: 0 6px 18px rgba(11,7,5,0.04);
+    max-width:520px;
+    width:100%;
+    align-self:flex-start;
+  }
+  .info-item{ display:flex; gap:10px; align-items:center; padding:6px 8px; border-radius:10px; }
+  .info-label{ font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; }
+  .info-value{ font-size:14px; font-weight:700; color:var(--burgundy); }
 
-  .controls{ position:absolute; right:12px; bottom:12px; display:flex; gap:8px; align-items:center; z-index:3 }
-  .dot{ width:10px; height:10px; border-radius:999px; background:rgba(107,15,26,0.12); cursor:pointer }
-  .dot.active{ background:var(--gold) }
-  .arrow{ background:var(--panel-rgba); border:1px solid rgba(107,15,26,0.06); color:var(--burgundy); padding:8px; border-radius:10px; cursor:pointer; margin-left:8px; box-shadow:0 6px 18px rgba(107,15,26,0.06); }
-
-  .map-wrap{ position:relative; margin-top:12px; z-index:4 }
+  .map-wrap{ margin-top:12px; width:100%; max-width:640px; position:relative; }
   .map-header{ color:var(--muted); margin-bottom:8px; font-size:14px }
-  iframe.map-iframe{ width:100%; height:220px; border:0; display:block; pointer-events:none; touch-action:none; background:linear-gradient(180deg,#fff,#f8f4f3); border-radius:10px; border:1px solid rgba(107,15,26,0.04); }
+  iframe.map-iframe{ width:100%; height:220px; border:0; display:block; pointer-events:none; border-radius:10px; }
 
-  @media (max-width:420px){ iframe.map-iframe{ height:150px; } }
+  .map-overlay{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:transparent; cursor:pointer; z-index:25; }
+  .map-overlay .hint{ background:var(--panel-rgba); color:var(--burgundy); padding:8px 12px; border-radius:999px; font-size:13px; border:1px solid rgba(107,15,26,0.06); }
 
-  .map-overlay{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:transparent; cursor:pointer; z-index:25; -webkit-tap-highlight-color: transparent; }
-  .map-overlay .hint{ background:var(--panel-rgba); color:var(--burgundy); padding:8px 12px; border-radius:999px; font-size:13px; border:1px solid rgba(107,15,26,0.06); box-shadow:0 6px 18px rgba(107,15,26,0.06); }
+  .hero-actions{ display:flex; gap:12px; margin-top:18px; align-items:center; }
+  .rsvp-main{ background:linear-gradient(90deg,var(--gold),var(--rose)); color:var(--burgundy); padding:12px 18px; border-radius:999px; font-weight:800; font-size:16px; border:none; cursor:pointer; }
+  .rsvp-secondary{ background:transparent; border:1px solid rgba(107,15,26,0.08); color:var(--burgundy); padding:10px 14px; border-radius:10px; cursor:pointer; }
 
   .backdrop{ position:fixed; inset:0; background:rgba(11,7,5,0.6); display:none; align-items:center; justify-content:center; z-index:60; padding:20px }
-  .modal{ width:100%; max-width:720px; background:var(--modal-rgba); border-radius:12px; padding:20px; border:1px solid rgba(107,15,26,0.06); box-shadow:0 30px 80px rgba(11,7,5,0.12); color:var(--burgundy); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+  .modal{ width:100%; max-width:720px; background:var(--modal-rgba); border-radius:12px; padding:20px; border:1px solid rgba(107,15,26,0.06); box-shadow:0 30px 80px rgba(11,7,5,0.12); color:var(--burgundy); }
   .modal h3{ margin:0 0 8px 0; font-size:20px }
   .modal .small{ color:var(--muted); font-size:14px; margin-bottom:12px }
-  .form-row{ display:flex; gap:12px; margin-bottom:12px; flex-wrap:wrap }
-  label{ display:block; font-size:13px; color:var(--muted); margin-bottom:6px }
-  input[type=text], input[type=email], input[type=tel], textarea{ width:100%; padding:10px 12px; border-radius:8px; border:1px solid rgba(107,15,26,0.06); background:linear-gradient(180deg,#fff,#fff7f6); color:var(--burgundy); font-weight:600; }
-  textarea{ min-height:90px; resize:vertical }
-  .companion-list{ display:flex; flex-direction:column; gap:8px; margin-bottom:8px }
-  .companion-row{ display:flex; gap:8px; align-items:center }
-  .btn{ padding:10px 14px; border-radius:10px; border:none; cursor:pointer; font-weight:700 }
-  .btn-add{ background:transparent; border:1px dashed rgba(107,15,26,0.06); color:var(--gold) }
-  .btn-send{ background:linear-gradient(90deg,var(--gold),var(--rose)); color:var(--burgundy) }
-  .btn-cancel{ background:transparent; border:1px solid rgba(107,15,26,0.06); color:var(--muted) }
 
-  .inline-error{ color:#8B1E1E; background:rgba(255,200,200,0.12); padding:10px; border-radius:8px; margin-top:8px; display:none }
-  .success-modal .name{ font-weight:800; color:var(--gold); margin-top:8px }
-
-  /* helper to hide form rows when opening regret-only view */
-  .hidden { display:none !important; }
-
-  @media (min-width:521px) and (max-width:1024px){
-    .stage{ flex-direction:row; align-items:flex-start }
-    .hero{ width:54%; padding:28px 24px }
-    .slideshow{ width:46%; padding:18px }
-    .slides{ min-height:260px; padding-right:24px }
-    .img-wrap{ min-height:220px }
-    .hero-actions{ margin-top:8px }
-    iframe.map-iframe{ pointer-events:none }
-    .map-overlay{ display:flex }
-    .hero-actions{ z-index:6 }
+  form label{ display:block; margin-bottom:6px; font-weight:700; color:var(--burgundy); }
+  form input[type="text"], form input[type="tel"], form input[type="email"], form textarea, form select, form input[type="date"], form input[type="time"]{
+    width:100%;
+    padding:10px 12px;
+    border-radius:8px;
+    border:1px solid rgba(107,15,26,0.08);
+    background: #fff;
+    font-size:14px;
+    color:var(--burgundy);
+    margin-bottom:8px;
   }
+  form textarea{ min-height:80px; resize:vertical; }
+  .btn{ padding:8px 12px; border-radius:8px; cursor:pointer; border:1px solid rgba(107,15,26,0.06); background:transparent; color:var(--burgundy); }
+  .btn-primary{ background:linear-gradient(90deg,var(--gold),var(--rose)); border:none; color:var(--burgundy); font-weight:800; }
 
-  @media (max-width:520px){
-    .stage{ flex-direction:column; min-height:auto }
-    .slideshow{ width:100%; padding:12px; border-left:none; border-top:1px solid rgba(107,15,26,0.03) }
-    .hero{ padding:18px 16px }
-    h1{ font-size:28px }
-    .hero-actions{ margin-top:8px }
-    .rsvp-main{ font-size:15px; padding:10px 14px }
-    .slides{ min-height:200px }
-    .img-wrap{ min-height:160px; height:auto }
-    .hero-actions-inner{ flex-direction:column-reverse; gap:10px }
-    .rsvp-secondary{ width:100% }
-    .rsvp-main{ width:100% }
-    iframe.map-iframe{ height:160px }
-  }
-
-  img, iframe { max-width:100%; }
+  .hidden{ display:none !important; }
+  img, iframe { max-width:100%; -webkit-user-drag:none; -webkit-touch-callout:none; }
 </style>
 </head>
 <body>
 
-<!-- PNG texture layer (bg.png) -->
-<div class="texture-bg" aria-hidden="true"></div>
+  <!-- subtle full-screen background -->
+  <div class="texture-bg" aria-hidden="true"></div>
 
-<div class="stage" role="main" aria-labelledby="heroTitle">
-  <div class="stage-inner">
-    <div class="hero" aria-hidden="false">
-      <div class="hero-top">
+  <!-- Inline SVG balloons (ensures visibility on all devices) -->
+  <svg class="balloons-svg" viewBox="0 0 360 160" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+    <!-- Left balloon -->
+    <g transform="translate(40,10)">
+      <ellipse cx="30" cy="40" rx="28" ry="36" fill="#caa43a" opacity="0.95"/>
+      <path d="M30 76 L30 110" stroke="#b07f2a" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="20" cy="30" r="4" fill="#fff" opacity="0.6"/>
+    </g>
+    <!-- Center balloon -->
+    <g transform="translate(150,0)">
+      <ellipse cx="40" cy="50" rx="36" ry="46" fill="#c48b8b" opacity="0.98"/>
+      <path d="M40 96 L40 130" stroke="#9f5f5f" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="30" cy="40" r="5" fill="#fff" opacity="0.6"/>
+    </g>
+    <!-- Right balloon -->
+    <g transform="translate(260,10)">
+      <ellipse cx="30" cy="40" rx="28" ry="36" fill="#ffffff" opacity="0.95" stroke="#e6d6d6" stroke-width="1"/>
+      <path d="M30 76 L30 110" stroke="#c9bfbf" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="22" cy="30" r="4" fill="#fff" opacity="0.6"/>
+    </g>
+  </svg>
+
+  <div class="stage" role="main" aria-labelledby="heroTitle">
+    <div class="stage-inner">
+      <div class="hero" aria-hidden="false">
         <div class="eyebrow">Celebration</div>
         <h1 id="heroTitle">Alice Dela Cruz — 75th Birthday</h1>
 
-        <!-- Replaced content per your screenshot/text -->
+        <!-- Vertical gallery (3 photos) -->
+        <div class="gallery" aria-label="Photo gallery">
+          <div class="thumbs" id="thumbs">
+            <div class="thumb active" data-index="0" tabindex="0" aria-label="Slide 1">
+              <img src="new4.jpg" alt="Alice photo 1">
+            </div>
+            <div class="thumb" data-index="1" tabindex="0" aria-label="Slide 2">
+              <img src="new1.jpg" alt="Alice photo 2">
+            </div>
+            <div class="thumb" data-index="2" tabindex="0" aria-label="Slide 3">
+              <img src="new2.jpg" alt="Alice photo 3">
+            </div>
+          </div>
+
+          <div class="main-slide" id="mainSlide" aria-live="polite">
+            <img src="new4.jpg" alt="Main photo">
+          </div>
+        </div>
+
         <p class="sub">Hello! We’re excited to have you join us.</p>
         <p class="sub">Kindly note that we have allotted one seat per guest, or two seats if attending with a spouse.</p>
         <p class="sub">Please RSVP on or before April 30. If we don’t receive your response by then, we’ll assume you’re unavailable and may not be able to reserve a seat for you.</p>
         <p class="sub">Thank you for your understanding.</p>
-        
-        <div class="whenwhere"><strong>When</strong>: To be announced &nbsp; • &nbsp; <strong>Where</strong>: Jazz Makati</div>
+
+        <div class="info-tray" role="group" aria-label="Event details">
+          <div class="info-item" title="When: May 17, 2026" tabindex="0">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path fill="currentColor" d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zM5 20V9h14l.002 11H5z"/></svg>
+            <div>
+              <div class="info-label">When</div>
+              <div class="info-value">May 17, 2026</div>
+            </div>
+          </div>
+
+          <div class="info-item" title="Where: Jazz Makati 6th floor function hall" tabindex="0">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path fill="currentColor" d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>
+            <div>
+              <div class="info-label">Where</div>
+              <div class="info-value">Jazz Makati — 6th floor function hall</div>
+            </div>
+          </div>
+        </div>
 
         <div class="map-wrap" aria-hidden="false">
           <div class="map-header"><strong>Location</strong>: Jazz Makati — interactive map</div>
@@ -316,516 +341,660 @@
             <div class="hint">Tap to enable map</div>
           </div>
         </div>
-      </div>
 
-      <div class="hero-actions" aria-hidden="false">
-        <div class="hero-actions-inner">
+        <div class="hero-actions" aria-hidden="false">
           <button class="rsvp-main" id="openRsvp">RSVP</button>
           <button class="rsvp-secondary" id="notGoingBtn">Not going</button>
         </div>
       </div>
-
-      <div style="height:8px" aria-hidden="true"></div>
-    </div>
-
-    <div class="slideshow" aria-label="Photo slideshow placeholder">
-      <div class="slides" id="slides">
-        <div class="slide active" data-index="0" aria-hidden="false">
-          <div class="img-wrap"><img src="new4.jpg" alt="Slide 1" loading="lazy"></div>
-        </div>
-        <div class="slide" data-index="1" aria-hidden="true">
-          <div class="img-wrap"><img src="new1.jpg" alt="Slide 2" loading="lazy"></div>
-        </div>
-        <div class="slide" data-index="2" aria-hidden="true">
-          <div class="img-wrap"><img src="new2.jpg" alt="Slide 3" loading="lazy"></div>
-        </div>
-      </div>
-
-      <div class="controls" aria-hidden="false">
-        <div id="dots" style="display:flex;gap:8px;align-items:center"></div>
-        <button class="arrow" id="prev" aria-label="Previous slide">◀</button>
-        <button class="arrow" id="next" aria-label="Next slide">▶</button>
-      </div>
     </div>
   </div>
-</div>
 
-<!-- Going modal (also reused for regrets with minimal fields) -->
-<div class="backdrop" id="modalBackdrop" aria-hidden="true" role="dialog" aria-modal="true">
-  <div class="modal" role="document" id="goingModal">
-    <h3 id="modalTitle">RSVP — Going</h3>
-    <div class="small" id="modalSubtitle">Please share your details so we can prepare seating and refreshments.</div>
-    <form id="rsvpForm" autocomplete="on">
-      <div class="form-row" id="rowName">
-        <div style="flex:1;min-width:160px">
-          <label for="guestName"><strong>Full name</strong></label>
+  <!-- RSVP modal -->
+  <div class="backdrop" id="modalBackdrop" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal" role="document" id="goingModal">
+      <h3 id="modalTitle">RSVP — Going</h3>
+      <div class="small" id="modalSubtitle">Please share your details so we can prepare seating and refreshments.</div>
+      <form id="rsvpForm" autocomplete="on">
+        <div id="rowName" style="margin-bottom:12px">
+          <label for="guestName">Full name</label>
           <input id="guestName" name="guestName" type="text" required placeholder="Full name" autocomplete="name">
         </div>
-      </div>
 
-      <div class="form-row" id="rowPhone">
-        <div style="flex:1;min-width:160px">
-          <label for="guestPhone"><strong>Phone number</strong></label>
+        <div id="rowPhone" style="margin-bottom:12px">
+          <label for="guestPhone">Phone number</label>
           <input id="guestPhone" name="guestPhone" type="tel" required placeholder="+63 9xx xxx xxxx" autocomplete="tel">
         </div>
+
+        <div id="rowEmail" style="margin-bottom:12px">
+          <label for="guestEmail">Email (optional)</label>
+          <input id="guestEmail" name="guestEmail" type="email" placeholder="you@example.com" autocomplete="email">
+        </div>
+
+        <div id="rowCompanions" style="margin-bottom:12px">
+          <label>Companions</label>
+          <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+            <div id="compCount" style="color:var(--muted)">0</div>
+            <button type="button" class="btn" id="addCompanionBtn">Add companion</button>
+          </div>
+          <div class="companion-list" id="companionList" aria-live="polite"></div>
+        </div>
+
+        <label for="message">Message or notes</label>
+        <textarea id="message" name="message" placeholder="Dietary needs, greetings, or short note"></textarea>
+
+        <div id="sendError" style="display:none;color:#8B1E1E;background:rgba(255,200,200,0.12);padding:10px;border-radius:8px;margin-top:8px"></div>
+
+        <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:14px">
+          <button type="button" id="cancelBtn" class="btn">Cancel</button>
+          <button type="submit" id="sendBtn" class="btn btn-primary">Send RSVP</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Success modal with mobile calendar prompt (calendar options hidden for regrets) -->
+  <div class="backdrop" id="successBackdrop" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal success-modal" role="document" aria-labelledby="successTitle">
+      <h3 id="successTitle">Thank you</h3>
+      <div class="small" id="successSmall">Your RSVP has been recorded.</div>
+
+      <!-- For "Going" responses: show calendar options. For "Regrets": show a simple regrets confirmation. -->
+      <div id="calendarOptions" style="margin-top:14px;display:flex;flex-direction:column;gap:10px">
+        <button id="addDeviceCalendar" class="btn btn-primary">Add to device calendar</button>
+        <button id="addGoogleCalendar" class="btn">Add to Google Calendar</button>
+        <button id="downloadIcsBtn" class="btn">Download .ics file</button>
+        <button id="closeSuccess" class="btn" style="margin-top:6px">Close</button>
       </div>
 
-      <div class="form-row" id="rowEmail">
-        <div style="flex:1;min-width:160px">
-          <label for="guestEmail"><strong>Email (optional)</strong></label>
-          <input id="guestEmail" name="guestEmail" type="email" placeholder="you@example.com" autocomplete="email">
+      <div id="regretConfirmation" style="margin-top:14px;display:none;flex-direction:column;gap:10px">
+        <div style="color:var(--muted)">Your regrets have been sent. Thank you for letting us know.</div>
+        <div style="display:flex;justify-content:flex-end">
+          <button id="closeRegret" class="btn btn-primary">Close</button>
         </div>
       </div>
 
-      <div class="form-row" id="rowCompanions">
-        <div style="flex:1;min-width:160px">
-          <label><strong>Companions</strong></label>
-          <div style="display:flex;gap:8px;align-items:center">
-            <div id="compCount" style="color:var(--muted)">0</div>
-            <button type="button" class="btn btn-add" id="addCompanionBtn">Add companion</button>
+      <div style="margin-top:12px;font-weight:700;color:var(--gold)" id="successName"></div>
+    </div>
+  </div>
+
+  <!-- Not-going modal -->
+  <div class="backdrop" id="sadBackdrop" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal" role="document" aria-labelledby="sadTitle">
+      <div style="display:flex;gap:14px;align-items:flex-start">
+        <div style="flex:1">
+          <div class="sad-emoji" style="font-size:28px">😔</div>
+          <h3 id="sadTitle">We’ll miss you</h3>
+          <p style="color:var(--muted);line-height:1.5">
+            It truly saddens us to hear you won’t be able to join the celebration for our beloved Alice Dela Cruz.
+          </p>
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <button id="sadClose" class="btn">Close</button>
+            <button id="sendRegrets" class="btn btn-primary">Send regrets</button>
           </div>
         </div>
       </div>
-
-      <div class="companion-list" id="companionList" aria-live="polite"></div>
-
-      <label for="message"><strong>Message or notes</strong></label>
-      <textarea id="message" name="message" placeholder="Dietary needs, greetings, or short note"></textarea>
-
-      <div id="sendError" class="inline-error" style="display:none"></div>
-
-      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:14px">
-        <button type="button" class="btn btn-cancel" id="cancelBtn">Cancel</button>
-        <button type="submit" class="btn btn-send" id="sendBtn">Send RSVP</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<!-- Success modal -->
-<div class="backdrop" id="successBackdrop" aria-hidden="true" role="dialog" aria-modal="true">
-  <div class="modal success-modal" role="document" aria-labelledby="successTitle">
-    <h3 id="successTitle">Thank you</h3>
-    <div class="small">Your RSVP has been sent.</div>
-    <div style="margin-top:12px">We appreciate your response,</div>
-    <div class="name" id="successName" style="font-size:18px;margin-top:8px;color:var(--gold)"></div>
-    <div style="display:flex;justify-content:flex-end;margin-top:18px">
-      <button class="btn btn-send" id="successClose">Close</button>
     </div>
   </div>
-</div>
 
-<!-- Not-going modal -->
-<div class="backdrop" id="sadBackdrop" aria-hidden="true" role="dialog" aria-modal="true">
-  <div class="modal" role="document" aria-labelledby="sadTitle">
-    <div style="display:flex;gap:14px;align-items:flex-start">
-      <div style="flex:1">
-        <div class="sad-emoji">😔</div>
-        <h3 id="sadTitle">We’ll miss you</h3>
-        <p style="color:var(--muted);line-height:1.5">
-          It truly saddens us to hear you won’t be able to join the celebration for our beloved Alice Dela Cruz.
-          Your presence will be missed, and your warm thoughts and prayers mean so much to the family.
-          If you’d like, please send a short message or regrets — we’ll make sure your kind words are shared.
-        </p>
-        <div class="sad-actions" style="display:flex;gap:8px;margin-top:12px">
-          <button class="btn btn-cancel" id="sadClose">Close</button>
-          <button class="btn btn-send" id="sendRegrets">Send regrets by email</button>
+  <!-- Calendar prompt modal (advanced options) -->
+  <div class="backdrop calendar-backdrop" id="calendarBackdrop" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal calendar-modal" role="document" aria-labelledby="calendarTitle">
+      <h3 id="calendarTitle">Add to your calendar</h3>
+      <div class="small" id="calendarSubtitle">Choose how you'd like to add the event.</div>
+
+      <div style="margin-top:12px">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px">
+          <label for="evtDate" style="min-width:72px;color:var(--muted);font-weight:700">Date</label>
+          <input id="evtDate" type="date" />
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px">
+          <label for="evtTime" style="min-width:72px;color:var(--muted);font-weight:700">Time</label>
+          <input id="evtTime" type="time" />
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px">
+          <label for="evtDuration" style="min-width:72px;color:var(--muted);font-weight:700">Duration</label>
+          <select id="evtDuration" aria-label="Event duration">
+            <option value="60">1 hour</option>
+            <option value="90">1.5 hours</option>
+            <option value="120" selected>2 hours</option>
+            <option value="180">3 hours</option>
+          </select>
         </div>
       </div>
+
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
+        <button id="skipCalendar" class="btn">Skip</button>
+        <button id="confirmDeviceAdd" class="btn btn-primary">Add to device calendar</button>
+        <button id="confirmGoogleAdd" class="btn">Add to Google Calendar</button>
+        <button id="confirmDownloadIcs" class="btn">Download .ics</button>
+      </div>
     </div>
   </div>
-</div>
-
-<!-- EmailJS CDN (optional) -->
-<script>
-  (function loadCDN(){
-    const s = document.createElement('script');
-    s.src = 'https://cdn.jsdelivr.net/npm/emailjs-com@3.2.0/dist/email.min.js';
-    s.async = false;
-    s.onload = function(){ console.log('EmailJS CDN loaded'); };
-    s.onerror = function(){ console.warn('EmailJS CDN failed to load'); };
-    document.head.appendChild(s);
-  })();
-</script>
 
 <script>
-/* ====== CONFIG ====== */
+/* ====== CONFIG ======
+   EmailJS REST fallback will be used if the EmailJS client library is not available.
+   Replace EMAILJS_USER_ID, SERVICE_ID, TEMPLATE_ID with your actual values if different.
+*/
 const EMAILJS_USER_ID = 'WCxmw76Onz5EwVkrU';
 const EMAILJS_SERVICE_ID = 'service_wd029q5';
 const EMAILJS_TEMPLATE_ID = 'template_1batocb';
 
-/* ====== Slideshow logic ====== */
-const slides = Array.from(document.querySelectorAll('.slide'));
-const dotsWrap = document.getElementById('dots');
-let current = 0;
-let autoplay = true;
-let timer = null;
-
-function makeDots(){
-  slides.forEach((s,i)=>{
-    const d = document.createElement('div');
-    d.className = 'dot' + (i===0 ? ' active' : '');
-    d.setAttribute('data-index', i);
-    d.addEventListener('click', ()=> goTo(i));
-    dotsWrap.appendChild(d);
-  });
+/* ====== Utility: detect mobile platform ====== */
+function isIOS() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 }
-function updateSlides(){
-  slides.forEach((s,i)=>{
-    s.classList.toggle('active', i===current);
-    s.setAttribute('aria-hidden', i===current ? 'false' : 'true');
-  });
-  Array.from(dotsWrap.children).forEach((d,i)=> d.classList.toggle('active', i===current));
+function isAndroid() {
+  return /Android/.test(navigator.userAgent);
 }
-function goTo(i){ current = (i + slides.length) % slides.length; updateSlides(); resetTimer(); }
-function next(){ goTo(current+1) }
-function prev(){ goTo(current-1) }
-document.getElementById('next').addEventListener('click', next);
-document.getElementById('prev').addEventListener('click', prev);
 
-function startTimer(){ if(timer) clearInterval(timer); timer = setInterval(()=> { if(autoplay) next(); }, 4200); }
-function resetTimer(){ startTimer() }
+/* ====== Gallery logic (3 photos) ====== */
+function setActiveThumb(index){
+  const thumbs = Array.from(document.querySelectorAll('.thumb'));
+  const mainImg = document.querySelector('#mainSlide img');
+  if (!thumbs.length || !mainImg) return;
+  index = (index + thumbs.length) % thumbs.length;
+  thumbs.forEach((t,i)=>{
+    t.classList.toggle('active', i === index);
+    t.setAttribute('aria-pressed', String(i===index));
+  });
+  const src = thumbs[index].querySelector('img').src;
+  if (src) mainImg.src = src;
+  window.__galleryIndex = index;
+}
 
-makeDots();
-updateSlides();
-startTimer();
+document.addEventListener('DOMContentLoaded', ()=> {
+  const thumbs = Array.from(document.querySelectorAll('.thumb'));
+  thumbs.forEach(t=>{
+    t.addEventListener('click', ()=> setActiveThumb(Number(t.dataset.index)));
+    t.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setActiveThumb(Number(t.dataset.index)); }
+    });
+  });
 
-const slideshowEl = document.querySelector('.slideshow');
-slideshowEl.addEventListener('mouseenter', ()=> autoplay = false);
-slideshowEl.addEventListener('mouseleave', ()=> autoplay = true);
-slideshowEl.addEventListener('touchstart', ()=> autoplay = false);
-slideshowEl.addEventListener('touchend', ()=> autoplay = true);
+  document.addEventListener('keydown', (e)=>{
+    const idx = typeof window.__galleryIndex === 'number' ? window.__galleryIndex : 0;
+    if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') setActiveThumb(idx - 1);
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight') setActiveThumb(idx + 1);
+  });
+
+  setActiveThumb(0);
+});
 
 /* ====== Map overlay logic ====== */
-const mapOverlay = document.getElementById('mapOverlay');
-const mapIframe = document.querySelector('iframe.map-iframe');
-
-if (mapOverlay && mapIframe) {
-  mapOverlay.addEventListener('click', (e) => {
-    e.stopPropagation();
-    mapIframe.style.pointerEvents = 'auto';
-    mapOverlay.style.display = 'none';
-    mapIframe.focus && mapIframe.focus();
-  });
-
-  mapOverlay.addEventListener('keydown', (ev) => {
-    if (ev.key === 'Enter' || ev.key === ' ') {
-      ev.preventDefault();
+document.addEventListener('DOMContentLoaded', ()=> {
+  const mapOverlay = document.getElementById('mapOverlay');
+  const mapIframe = document.querySelector('iframe.map-iframe');
+  if (mapOverlay && mapIframe) {
+    mapOverlay.addEventListener('click', (e) => {
+      e.stopPropagation();
       mapIframe.style.pointerEvents = 'auto';
       mapOverlay.style.display = 'none';
-    }
-  });
-
-  window.addEventListener('resize', () => {
-    if (mapIframe) mapIframe.style.pointerEvents = 'none';
-    if (mapOverlay) mapOverlay.style.display = 'flex';
-  }, { passive: true });
-}
+      mapIframe.focus && mapIframe.focus();
+    });
+    mapOverlay.addEventListener('keydown', (ev) => {
+      if (ev.key === 'Enter' || ev.key === ' ') {
+        ev.preventDefault();
+        mapIframe.style.pointerEvents = 'auto';
+        mapOverlay.style.display = 'none';
+      }
+    });
+    window.addEventListener('resize', () => {
+      if (mapIframe) mapIframe.style.pointerEvents = 'none';
+      if (mapOverlay) mapOverlay.style.display = 'flex';
+    }, { passive: true });
+  }
+});
 
 /* ====== Modal & form logic ====== */
-const modalBackdrop = document.getElementById('modalBackdrop');
-const openRsvp = document.getElementById('openRsvp');
-const cancelBtn = document.getElementById('cancelBtn');
-const rsvpForm = document.getElementById('rsvpForm');
-const companionList = document.getElementById('companionList');
-const addCompanionBtn = document.getElementById('addCompanionBtn');
-const compCount = document.getElementById('compCount');
-const sendBtn = document.getElementById('sendBtn');
-const sendError = document.getElementById('sendError');
+document.addEventListener('DOMContentLoaded', ()=> {
+  const modalBackdrop = document.getElementById('modalBackdrop');
+  const openRsvp = document.getElementById('openRsvp');
+  const cancelBtn = document.getElementById('cancelBtn');
+  const rsvpForm = document.getElementById('rsvpForm');
+  const companionList = document.getElementById('companionList');
+  const addCompanionBtn = document.getElementById('addCompanionBtn');
+  const compCount = document.getElementById('compCount');
+  const sendBtn = document.getElementById('sendBtn');
+  const sendError = document.getElementById('sendError');
+  const successBackdrop = document.getElementById('successBackdrop');
+  const successNameEl = document.getElementById('successName');
+  const successSmall = document.getElementById('successSmall');
 
-const rowPhone = document.getElementById('rowPhone');
-const rowEmail = document.getElementById('rowEmail');
-const rowCompanions = document.getElementById('rowCompanions');
-const rowName = document.getElementById('rowName');
-const modalTitle = document.getElementById('modalTitle');
-const modalSubtitle = document.getElementById('modalSubtitle');
+  const rowPhone = document.getElementById('rowPhone');
+  const rowEmail = document.getElementById('rowEmail');
+  const rowCompanions = document.getElementById('rowCompanions');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalSubtitle = document.getElementById('modalSubtitle');
 
-let companions = [];
-let companionClicks = 0;
-const MAX_COMPANIONS = 2;
+  const sadBackdrop = document.getElementById('sadBackdrop');
+  const notGoingBtn = document.getElementById('notGoingBtn');
+  const sadClose = document.getElementById('sadClose');
+  const sendRegrets = document.getElementById('sendRegrets');
 
-/* Open full RSVP form */
-function openForm(){ 
-  restoreFullForm();
-  sendError.style.display='none'; sendError.textContent='';
-  modalBackdrop.style.display='flex'; modalBackdrop.setAttribute('aria-hidden','false'); 
-  setTimeout(()=> document.getElementById('guestName').focus(), 120); 
-}
+  const calendarBackdrop = document.getElementById('calendarBackdrop');
+  const evtDate = document.getElementById('evtDate');
+  const evtTime = document.getElementById('evtTime');
+  const evtDuration = document.getElementById('evtDuration');
 
-/* Close and reset */
-function closeForm(){ 
-  modalBackdrop.style.display='none'; modalBackdrop.setAttribute('aria-hidden','true'); 
-  rsvpForm.reset(); companions=[]; companionClicks=0; renderCompanions(); enableAddCompanion(true);
-  restoreFullForm();
-  sendError.style.display='none'; sendError.textContent=''; 
-}
+  const addDeviceCalendarBtn = document.getElementById('addDeviceCalendar');
+  const addGoogleCalendarBtn = document.getElementById('addGoogleCalendar');
+  const downloadIcsBtn = document.getElementById('downloadIcsBtn');
+  const closeSuccessBtn = document.getElementById('closeSuccess');
 
-/* Restore full RSVP form (show all fields) */
-function restoreFullForm(){
-  modalTitle.textContent = 'RSVP — Going';
-  modalSubtitle.textContent = 'Please share your details so we can prepare seating and refreshments.';
-  rowPhone.classList.remove('hidden');
-  rowEmail.classList.remove('hidden');
-  rowCompanions.classList.remove('hidden');
-  document.getElementById('guestPhone').required = true;
-}
+  const confirmDeviceAdd = document.getElementById('confirmDeviceAdd');
+  const confirmGoogleAdd = document.getElementById('confirmGoogleAdd');
+  const confirmDownloadIcs = document.getElementById('confirmDownloadIcs');
+  const skipCalendar = document.getElementById('skipCalendar');
 
-/* Open regret-only form (name + message only) */
-function openRegretForm(prefillName = '') {
-  // hide phone, email, companions
-  modalTitle.textContent = 'Regrets — Unable to Attend';
-  modalSubtitle.textContent = 'Please leave your name and a short message if you wish.';
-  rowPhone.classList.add('hidden');
-  rowEmail.classList.add('hidden');
-  rowCompanions.classList.add('hidden');
-  document.getElementById('guestPhone').required = false;
+  const calendarOptions = document.getElementById('calendarOptions');
+  const regretConfirmation = document.getElementById('regretConfirmation');
+  const closeRegretBtn = document.getElementById('closeRegret');
 
-  // clear companions and companion controls
-  companions = []; companionClicks = 0; renderCompanions(); enableAddCompanion(true);
+  let companions = [];
+  let companionClicks = 0;
+  const MAX_COMPANIONS = 2;
 
-  // prefill name if provided
-  document.getElementById('guestName').value = prefillName || '';
-  document.getElementById('message').value = '';
-
-  // show modal
-  sendError.style.display='none'; sendError.textContent='';
-  modalBackdrop.style.display='flex'; modalBackdrop.setAttribute('aria-hidden','false');
-  setTimeout(()=> document.getElementById('guestName').focus(), 120);
-}
-
-/* Add companion logic: limit to 2 clicks only, disable after 2 */
-function enableAddCompanion(enable){
-  addCompanionBtn.disabled = !enable;
-  addCompanionBtn.setAttribute('aria-disabled', String(!enable));
-  if(!enable) addCompanionBtn.classList.add('hidden');
-  else addCompanionBtn.classList.remove('hidden');
-}
-
-addCompanionBtn.addEventListener('click', ()=> {
-  // Only allow up to MAX_COMPANIONS companion additions
-  if (companionClicks >= MAX_COMPANIONS) return;
-  companionClicks++;
-  companions.push(''); // add empty companion name input
-  renderCompanions();
-  compCount.textContent = companions.length;
-  if (companionClicks >= MAX_COMPANIONS) {
-    // disable button after two clicks
-    enableAddCompanion(false);
+  function openForm(){ 
+    if (modalTitle) modalTitle.textContent = 'RSVP — Going';
+    if (modalSubtitle) modalSubtitle.textContent = 'Please share your details so we can prepare seating and refreshments.';
+    if (rowPhone) rowPhone.style.display = '';
+    if (rowEmail) rowEmail.style.display = '';
+    if (rowCompanions) rowCompanions.style.display = '';
+    const phoneEl = document.getElementById('guestPhone');
+    if (phoneEl) phoneEl.required = true;
+    if (sendError) { sendError.style.display='none'; sendError.textContent=''; }
+    if (modalBackdrop) { modalBackdrop.style.display='flex'; modalBackdrop.setAttribute('aria-hidden','false'); }
+    setTimeout(()=> { const el = document.getElementById('guestName'); el && el.focus && el.focus(); }, 120); 
   }
-});
+  function closeForm(){ 
+    if (modalBackdrop) { modalBackdrop.style.display='none'; modalBackdrop.setAttribute('aria-hidden','true'); }
+    rsvpForm.reset(); companions=[]; companionClicks=0; renderCompanions(); enableAddCompanion(true);
+    if (sendError) { sendError.style.display='none'; sendError.textContent=''; }
+  }
 
-/* Render companion inputs (names only, no notes) */
-function renderCompanions(){
-  companionList.innerHTML = '';
-  companions.forEach((c, idx)=>{
-    const row = document.createElement('div');
-    row.className = 'companion-row';
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.placeholder = 'Companion full name';
-    input.value = c;
-    input.addEventListener('input', (e)=> companions[idx] = e.target.value);
-    const remove = document.createElement('button');
-    remove.type = 'button';
-    remove.className = 'btn btn-cancel';
-    remove.textContent = 'Remove';
-    remove.addEventListener('click', ()=> { 
-      companions.splice(idx,1); 
-      // when removing, allow add button again if below limit
-      companionClicks = Math.max(0, companionClicks - 1);
-      renderCompanions(); 
-      compCount.textContent = companions.length;
-      if (companionClicks < MAX_COMPANIONS) enableAddCompanion(true);
+  function enableAddCompanion(enable){
+    if (!addCompanionBtn) return;
+    addCompanionBtn.disabled = !enable;
+    if(!enable) addCompanionBtn.classList.add('hidden'); else addCompanionBtn.classList.remove('hidden');
+  }
+
+  if (addCompanionBtn) {
+    addCompanionBtn.addEventListener('click', ()=> {
+      if (companionClicks >= MAX_COMPANIONS) return;
+      companionClicks++;
+      companions.push('');
+      renderCompanions();
+      if (compCount) compCount.textContent = companions.length;
+      if (companionClicks >= MAX_COMPANIONS) enableAddCompanion(false);
     });
-    row.appendChild(input);
-    row.appendChild(remove);
-    companionList.appendChild(row);
+  }
+
+  function renderCompanions(){
+    if (!companionList) return;
+    companionList.innerHTML = '';
+    companions.forEach((c, idx)=>{
+      const row = document.createElement('div');
+      row.style.display='flex'; row.style.gap='8px'; row.style.marginTop='8px';
+      const input = document.createElement('input');
+      input.type='text'; input.placeholder='Companion full name'; input.value=c;
+      input.addEventListener('input', (e)=> companions[idx] = e.target.value);
+      const remove = document.createElement('button');
+      remove.type='button'; remove.textContent='Remove'; remove.className='btn';
+      remove.addEventListener('click', ()=> {
+        companions.splice(idx,1);
+        companionClicks = Math.max(0, companionClicks - 1);
+        renderCompanions();
+        if (compCount) compCount.textContent = companions.length;
+        if (companionClicks < MAX_COMPANIONS) enableAddCompanion(true);
+      });
+      row.appendChild(input); row.appendChild(remove);
+      companionList.appendChild(row);
+    });
+    if (compCount) compCount.textContent = companions.length;
+  }
+
+  if (openRsvp) openRsvp.addEventListener('click', openForm);
+  if (cancelBtn) cancelBtn.addEventListener('click', closeForm);
+
+  /* Submit handler:
+     - Try EmailJS client library if available.
+     - If not available, use EmailJS REST API via fetch (no mailto fallback).
+     - On success, show success modal and prompt for calendar add (mobile-friendly) only for "Going".
+     - For "Regrets", show a different confirmation and do NOT show calendar options.
+  */
+  rsvpForm.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    if (sendError) { sendError.style.display='none'; sendError.textContent=''; }
+
+    const name = document.getElementById('guestName').value.trim();
+    const phoneEl = document.getElementById('guestPhone');
+    const phone = phoneEl ? phoneEl.value.trim() : '';
+    const email = document.getElementById('guestEmail').value.trim();
+    const message = document.getElementById('message').value.trim();
+    const companionNames = companions.filter(x=>x.trim()).map(x=>x.trim());
+
+    const isRegret = modalTitle && modalTitle.textContent && modalTitle.textContent.toLowerCase().includes('regret');
+
+    if (!name || (!isRegret && !phone)) {
+      if (sendError) {
+        sendError.textContent = isRegret ? 'Please fill required field: name.' : 'Please fill required fields: name and phone.';
+        sendError.style.display = 'block';
+      }
+      return;
+    }
+
+    sendBtn.disabled = true;
+    sendBtn.textContent = 'Sending…';
+
+    // Prepare template params
+    const templateParams = {
+      response_type: isRegret ? 'Regrets' : 'Going',
+      guest_name: name,
+      guest_phone: phone || '(none)',
+      guest_email: email || '(none)',
+      guest_companions: companionNames.join('; ') || '(none)',
+      guest_message: message || '(none)',
+      location: 'Jazz Makati — 6th floor function hall'
+    };
+
+    try {
+      // 1) If emailjs client is available, use it
+      if (window.emailjs && typeof emailjs.send === 'function') {
+        if (typeof emailjs.init === 'function') emailjs.init(EMAILJS_USER_ID);
+        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
+      } else {
+        // 2) Fallback: call EmailJS REST API directly (client-side fetch)
+        const payload = {
+          service_id: EMAILJS_SERVICE_ID,
+          template_id: EMAILJS_TEMPLATE_ID,
+          user_id: EMAILJS_USER_ID,
+          template_params: templateParams
+        };
+        const resp = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (!resp.ok) {
+          const text = await resp.text().catch(()=> '');
+          throw new Error('Email send failed: ' + (text || resp.status));
+        }
+      }
+
+      // success UI: close RSVP modal, show success modal
+      if (modalBackdrop) { modalBackdrop.style.display='none'; modalBackdrop.setAttribute('aria-hidden','true'); }
+
+      // If this was a regret, show regret confirmation and hide calendar options
+      if (isRegret) {
+        if (calendarOptions) calendarOptions.style.display = 'none';
+        if (regretConfirmation) regretConfirmation.style.display = 'flex';
+        if (successSmall) successSmall.textContent = 'Your regrets have been sent.';
+      } else {
+        // Going: show calendar options and hide regret confirmation
+        if (calendarOptions) calendarOptions.style.display = 'flex';
+        if (regretConfirmation) regretConfirmation.style.display = 'none';
+        if (successSmall) successSmall.textContent = 'Your RSVP has been recorded.';
+      }
+
+      if (successBackdrop) { successBackdrop.style.display='flex'; successBackdrop.setAttribute('aria-hidden','false'); }
+      successNameEl.textContent = name;
+
+      rsvpForm.reset();
+      companions = []; companionClicks = 0; renderCompanions(); enableAddCompanion(true);
+
+      // prefill calendar modal inputs with default event date/time (only relevant for Going)
+      if (!isRegret) {
+        const defaultDate = new Date(2026,4,17,18,0,0);
+        if (evtDate) evtDate.value = defaultDate.toISOString().slice(0,10);
+        if (evtTime) evtTime.value = defaultDate.toTimeString().slice(0,5);
+        if (evtDuration) evtDuration.value = '120';
+      }
+    } catch (err) {
+      console.warn('RSVP send error', err);
+      if (sendError) {
+        sendError.textContent = 'Unable to send RSVP right now. Please try again.';
+        sendError.style.display = 'block';
+      }
+    } finally {
+      sendBtn.disabled = false;
+      sendBtn.textContent = 'Send RSVP';
+    }
   });
-  compCount.textContent = companions.length;
-}
 
-/* Helper: robust SDK availability check and fallback trigger */
-async function ensureEmailJSSDK(timeout = 6000) {
-  if (window.emailjs && typeof emailjs.send === 'function') return true;
-  const start = Date.now();
-  while (!(window.emailjs && typeof emailjs.send === 'function') && Date.now() - start < timeout) {
-    await new Promise(r => setTimeout(r, 150));
-  }
-  if (window.emailjs && typeof emailjs.send === 'function') return true;
-  try {
-    await new Promise((resolve, reject) => {
-      const s = document.createElement('script');
-      s.src = 'email.min.js';
-      s.async = false;
-      s.onload = () => resolve();
-      s.onerror = () => reject(new Error('local SDK load failed'));
-      document.head.appendChild(s);
-    });
-    await new Promise(r => setTimeout(r, 150));
-    return !!(window.emailjs && typeof emailjs.send === 'function');
-  } catch (e) { return false; }
-}
+  /* Not-going modal wiring */
+  if (notGoingBtn) notGoingBtn.addEventListener('click', ()=> {
+    if (sadBackdrop) { sadBackdrop.style.display='flex'; sadBackdrop.setAttribute('aria-hidden','false'); }
+  });
+  if (sadClose) sadClose.addEventListener('click', ()=> {
+    if (sadBackdrop) { sadBackdrop.style.display='none'; sadBackdrop.setAttribute('aria-hidden','true'); }
+  });
+  if (sendRegrets) sendRegrets.addEventListener('click', ()=> {
+    if (sadBackdrop) { sadBackdrop.style.display='none'; sadBackdrop.setAttribute('aria-hidden','true'); }
+    openRegretForm('');
+  });
 
-/* ====== Safe submit handler (EmailJS primary, mailto fallback) ====== */
-rsvpForm.addEventListener('submit', async (e)=>{
-  e.preventDefault();
-  sendError.style.display='none';
-  sendError.textContent='';
+  if (closeSuccessBtn) closeSuccessBtn.addEventListener('click', ()=> {
+    if (successBackdrop) { successBackdrop.style.display='none'; successBackdrop.setAttribute('aria-hidden','true'); }
+  });
+  if (closeRegretBtn) closeRegretBtn.addEventListener('click', ()=> {
+    if (successBackdrop) { successBackdrop.style.display='none'; successBackdrop.setAttribute('aria-hidden','true'); }
+  });
 
-  const name = document.getElementById('guestName').value.trim();
-  const phone = document.getElementById('guestPhone').value.trim();
-  const email = document.getElementById('guestEmail').value.trim();
-  const message = document.getElementById('message').value.trim();
-  const companionNames = companions.filter(x=>x.trim()).map(x=>x.trim());
-
-  // If phone row is hidden (regret-only), phone is optional
-  const phoneRequired = !rowPhone.classList.contains('hidden');
-
-  if(!name || (phoneRequired && !phone)){
-    sendError.textContent = 'Please fill required fields: name' + (phoneRequired ? ' and phone.' : '.');
-    sendError.style.display = 'block';
-    return;
+  /* Calendar helpers: build event data and ICS */
+  function getEventFromInputs(){
+    const dateVal = evtDate ? evtDate.value : '';
+    const timeVal = evtTime ? evtTime.value : '18:00';
+    const durationMin = parseInt(evtDuration ? evtDuration.value : '120', 10);
+    let startLocal;
+    if(!dateVal){
+      startLocal = new Date(2026,4,17,18,0,0);
+    } else {
+      const [y,m,d] = dateVal.split('-').map(Number);
+      const [hh,mm] = timeVal.split(':').map(Number);
+      startLocal = new Date(y, m-1, d, hh || 18, mm || 0, 0);
+    }
+    const endLocal = new Date(startLocal.getTime() + durationMin * 60000);
+    const title = 'Alice Dela Cruz — 75th Birthday';
+    const location = 'Jazz Makati — 6th floor function hall';
+    const description = `RSVP confirmed. Event: Alice Dela Cruz — 75th Birthday.`;
+    return { title, location, description, startLocal, endLocal };
   }
 
-  // Determine response type from modal title
-  const responseType = modalTitle.textContent.toLowerCase().includes('regret') ? 'Regrets' : 'Going';
-
-  const templateParams = {
-    response_type: responseType,
-    guest_name: name,
-    guest_phone: phone || '(none)',
-    guest_email: email || '(none)',
-    guest_companions: companionNames.join('; ') || '(none)',
-    guest_message: message || '(none)',
-    location: 'Jazz Makati',
-    template_id: EMAILJS_TEMPLATE_ID
-  };
-
-  sendBtn.disabled = true;
-  sendBtn.textContent = 'Sending…';
-
-  try {
-    const sdkReady = await ensureEmailJSSDK(6000);
-    if(!sdkReady) throw new Error('EmailJS SDK not available');
-
-    if (typeof emailjs.init === 'function') emailjs.init(EMAILJS_USER_ID);
-    const result = await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
-    console.log('EmailJS send success', result);
-
-    // hide the RSVP form modal and show success modal
-    modalBackdrop.style.display = 'none';
-    modalBackdrop.setAttribute('aria-hidden','true');
-
-    document.getElementById('successName').textContent = name;
-    document.getElementById('successBackdrop').style.display = 'flex';
-    document.getElementById('successBackdrop').setAttribute('aria-hidden','false');
-
-    rsvpForm.reset();
-    companions = [];
-    companionClicks = 0;
-    renderCompanions();
-    enableAddCompanion(true);
-    restoreFullForm();
-  } catch (err) {
-    console.warn('EmailJS send failed or unavailable, falling back to mailto:', err);
-
-    // hide the RSVP form modal before fallback
-    modalBackdrop.style.display = 'none';
-    modalBackdrop.setAttribute('aria-hidden','true');
-
-    const to = 'nadelacruz01@gmail.com';
-    const subject = `${responseType}: Alice Dela Cruz — ${responseType === 'Going' ? 'Going' : 'Unable to Attend'} (${name})`;
-    const lines = [
-      `Response: ${responseType}`,
-      `Name: ${name}`,
-      `Phone: ${phone || '(none)'}`,
-      `Email: ${email || '(none)'}`,
-      `Companions: ${companionNames.length ? companionNames.join('; ') : '(none)'}`,
-      `Message: ${message || '(none)'}`,
-      '',
-      'Sent from RSVP page'
-    ];
-    const body = encodeURIComponent(lines.join('\n'));
-    window.location.href = `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${body}`;
-
-    document.getElementById('successName').textContent = name;
-    document.getElementById('successBackdrop').style.display = 'flex';
-    document.getElementById('successBackdrop').setAttribute('aria-hidden','false');
-
-    rsvpForm.reset();
-    companions = [];
-    companionClicks = 0;
-    renderCompanions();
-    enableAddCompanion(true);
-    restoreFullForm();
-  } finally {
-    sendBtn.disabled = false;
-    sendBtn.textContent = 'Send RSVP';
-  }
-});
-
-/* Not-going modal logic */
-const sadBackdrop = document.getElementById('sadBackdrop');
-const notGoingBtn = document.getElementById('notGoingBtn');
-const sadClose = document.getElementById('sadClose');
-const sendRegrets = document.getElementById('sendRegrets');
-
-notGoingBtn.addEventListener('click', ()=> { sadBackdrop.style.display='flex'; sadBackdrop.setAttribute('aria-hidden','false'); });
-sadClose.addEventListener('click', ()=> { sadBackdrop.style.display='none'; sadBackdrop.setAttribute('aria-hidden','true'); });
-sadBackdrop.addEventListener('click', (e)=> { if(e.target === sadBackdrop){ sadBackdrop.style.display='none'; sadBackdrop.setAttribute('aria-hidden','true'); } });
-
-/* When user clicks "Send regrets by email" open the RSVP modal but only name + message */
-sendRegrets.addEventListener('click', ()=>{
-  sadBackdrop.style.display='none';
-  sadBackdrop.setAttribute('aria-hidden','true');
-  // open regret-only form; leave name blank for user to fill or prefill if desired
-  openRegretForm('');
-});
-
-/* Success modal close: also ensure RSVP modal is closed and view returns to main display */
-document.getElementById('successClose').addEventListener('click', ()=>{
-  // hide success modal
-  document.getElementById('successBackdrop').style.display = 'none';
-  document.getElementById('successBackdrop').setAttribute('aria-hidden','true');
-
-  // ensure RSVP modal is closed as well
-  if (modalBackdrop.style.display === 'flex') {
-    modalBackdrop.style.display = 'none';
-    modalBackdrop.setAttribute('aria-hidden','true');
+  function toGoogleDateTimeUTC(d){
+    const pad = (n)=> String(n).padStart(2,'0');
+    return d.getUTCFullYear() + pad(d.getUTCMonth()+1) + pad(d.getUTCDate()) + 'T' + pad(d.getUTCHours()) + pad(d.getUTCMinutes()) + pad(d.getUTCSeconds()) + 'Z';
   }
 
-  // reset form (already reset on send, but keep safe)
-  rsvpForm.reset();
-  companions = [];
-  companionClicks = 0;
-  renderCompanions();
-  enableAddCompanion(true);
-  restoreFullForm();
+  function buildGoogleCalendarUrl({title, description, location, startDate, endDate}){
+    const dates = `${toGoogleDateTimeUTC(startDate)}/${toGoogleDateTimeUTC(endDate)}`;
+    const params = new URLSearchParams({ action: 'TEMPLATE', text: title, details: description, location: location, dates: dates });
+    return `https://www.google.com/calendar/render?${params.toString()}`;
+  }
 
-  // return focus to main RSVP button for accessibility
-  setTimeout(()=> { openRsvp.focus && openRsvp.focus(); }, 60);
-});
+  function buildIcs({title, description, location, startLocal, endLocal}){
+    const pad = (n)=> String(n).padStart(2,'0');
+    function toICSDate(d){
+      return d.getUTCFullYear() + pad(d.getUTCMonth()+1) + pad(d.getUTCDate()) + 'T' + pad(d.getUTCHours()) + pad(d.getUTCMinutes()) + pad(d.getUTCSeconds()) + 'Z';
+    }
+    const uid = 'alice-rsvp-' + Date.now() + '@example.com';
+    const dtstamp = toICSDate(new Date());
+    const dtstart = toICSDate(startLocal);
+    const dtend = toICSDate(endLocal);
+    const ics = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//Alice RSVP//EN',
+      'CALSCALE:GREGORIAN',
+      'BEGIN:VEVENT',
+      `UID:${uid}`,
+      `DTSTAMP:${dtstamp}`,
+      `DTSTART:${dtstart}`,
+      `DTEND:${dtend}`,
+      `SUMMARY:${title}`,
+      `DESCRIPTION:${description}`,
+      `LOCATION:${location}`,
+      'END:VEVENT',
+      'END:VCALENDAR'
+    ].join('\r\n');
+    return ics;
+  }
 
-/* Wire up open/cancel buttons */
-openRsvp.addEventListener('click', openForm);
-cancelBtn.addEventListener('click', closeForm);
+  /* Device calendar add (mobile-first approach) */
+  async function addToDeviceCalendar(){
+    const ev = getEventFromInputs();
+    const ics = buildIcs(ev);
+    const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
 
-/* Accessibility & keyboard */
-document.addEventListener('keydown', (e)=>{
-  if(e.key === 'ArrowRight') next();
-  if(e.key === 'ArrowLeft') prev();
-  if(e.key === 'Escape'){
-    if(sadBackdrop.style.display === 'flex'){ sadBackdrop.style.display='none'; sadBackdrop.setAttribute('aria-hidden','true'); }
-    if(modalBackdrop.style.display === 'flex'){ closeForm(); }
-    if(document.getElementById('successBackdrop').style.display === 'flex'){
-      document.getElementById('successBackdrop').style.display='none';
-      document.getElementById('successBackdrop').setAttribute('aria-hidden','true');
-      if (modalBackdrop.style.display === 'flex') {
-        modalBackdrop.style.display = 'none';
-        modalBackdrop.setAttribute('aria-hidden','true');
+    // iOS: open the .ics directly in the same tab to trigger the Calendar import UI
+    if (isIOS()) {
+      window.location.href = url;
+      setTimeout(()=> URL.revokeObjectURL(url), 2000);
+      return;
+    }
+
+    // Android: open Google Calendar link and also trigger .ics download as fallback
+    if (isAndroid()) {
+      try {
+        const startUTC = new Date(ev.startLocal.getTime() - ev.startLocal.getTimezoneOffset()*60000);
+        const endUTC = new Date(ev.endLocal.getTime() - ev.endLocal.getTimezoneOffset()*60000);
+        const googleUrl = buildGoogleCalendarUrl({ title: ev.title, description: ev.description, location: ev.location, startDate: startUTC, endDate: endUTC });
+        window.open(googleUrl, '_blank', 'noopener');
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'alice-dela-cruz-75th.ics';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(()=> URL.revokeObjectURL(url), 2000);
+        return;
+      } catch (err) {
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'alice-dela-cruz-75th.ics';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(()=> URL.revokeObjectURL(url), 2000);
+        return;
       }
     }
+
+    // Desktop or unknown: trigger download of .ics
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'alice-dela-cruz-75th.ics';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=> URL.revokeObjectURL(url), 2000);
   }
+
+  /* Wire calendar buttons in success modal */
+  if (addDeviceCalendarBtn) addDeviceCalendarBtn.addEventListener('click', (ev)=>{
+    ev.preventDefault();
+    if (calendarBackdrop) calendarBackdrop.style.display = 'flex';
+  });
+
+  if (addGoogleCalendarBtn) addGoogleCalendarBtn.addEventListener('click', (ev)=>{
+    ev.preventDefault();
+    const evData = getEventFromInputs();
+    const startUTC = new Date(evData.startLocal.getTime() - evData.startLocal.getTimezoneOffset()*60000);
+    const endUTC = new Date(evData.endLocal.getTime() - evData.endLocal.getTimezoneOffset()*60000);
+    const url = buildGoogleCalendarUrl({ title: evData.title, description: evData.description, location: evData.location, startDate: startUTC, endDate: endUTC });
+    window.open(url, '_blank', 'noopener');
+    if (successBackdrop) { successBackdrop.style.display='none'; successBackdrop.setAttribute('aria-hidden','true'); }
+  });
+
+  if (downloadIcsBtn) downloadIcsBtn.addEventListener('click', (ev)=>{
+    ev.preventDefault();
+    const evData = getEventFromInputs();
+    const ics = buildIcs(evData);
+    const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'alice-dela-cruz-75th.ics';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=> URL.revokeObjectURL(url), 2000);
+    if (successBackdrop) { successBackdrop.style.display='none'; successBackdrop.setAttribute('aria-hidden','true'); }
+  });
+
+  if (closeSuccessBtn) closeSuccessBtn.addEventListener('click', (ev)=>{
+    ev.preventDefault();
+    if (successBackdrop) { successBackdrop.style.display='none'; successBackdrop.setAttribute('aria-hidden','true'); }
+  });
+
+  /* Calendar modal confirm buttons */
+  if (confirmDeviceAdd) confirmDeviceAdd.addEventListener('click', (ev)=>{
+    ev.preventDefault();
+    addToDeviceCalendar();
+    if (calendarBackdrop) { calendarBackdrop.style.display='none'; calendarBackdrop.setAttribute('aria-hidden','true'); }
+    if (successBackdrop) { successBackdrop.style.display='none'; successBackdrop.setAttribute('aria-hidden','true'); }
+  });
+  if (confirmGoogleAdd) confirmGoogleAdd.addEventListener('click', (ev)=>{
+    ev.preventDefault();
+    const evData = getEventFromInputs();
+    const startUTC = new Date(evData.startLocal.getTime() - evData.startLocal.getTimezoneOffset()*60000);
+    const endUTC = new Date(evData.endLocal.getTime() - evData.endLocal.getTimezoneOffset()*60000);
+    const url = buildGoogleCalendarUrl({ title: evData.title, description: evData.description, location: evData.location, startDate: startUTC, endDate: endUTC });
+    window.open(url, '_blank', 'noopener');
+    if (calendarBackdrop) { calendarBackdrop.style.display='none'; calendarBackdrop.setAttribute('aria-hidden','true'); }
+    if (successBackdrop) { successBackdrop.style.display='none'; successBackdrop.setAttribute('aria-hidden','true'); }
+  });
+  if (confirmDownloadIcs) confirmDownloadIcs.addEventListener('click', (ev)=>{
+    ev.preventDefault();
+    const evData = getEventFromInputs();
+    const ics = buildIcs(evData);
+    const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'alice-dela-cruz-75th.ics';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=> URL.revokeObjectURL(url), 2000);
+    if (calendarBackdrop) { calendarBackdrop.style.display='none'; calendarBackdrop.setAttribute('aria-hidden','true'); }
+    if (successBackdrop) { successBackdrop.style.display='none'; successBackdrop.setAttribute('aria-hidden','true'); }
+  });
+  if (skipCalendar) skipCalendar.addEventListener('click', (ev)=>{ ev.preventDefault(); if (calendarBackdrop) { calendarBackdrop.style.display='none'; calendarBackdrop.setAttribute('aria-hidden','true'); } });
+
+  /* Regret form flow (reuse RSVP modal but simplified) */
+  function openRegretForm(prefillName = '') {
+    const modalBackdropEl = document.getElementById('modalBackdrop');
+    const modalTitleEl = document.getElementById('modalTitle');
+    const modalSubtitleEl = document.getElementById('modalSubtitle');
+    if (modalTitleEl) modalTitleEl.textContent = 'Regrets — Unable to Attend';
+    if (modalSubtitleEl) modalSubtitleEl.textContent = 'Please leave your name and a short message if you wish.';
+    const rowPhoneEl = document.getElementById('rowPhone');
+    const rowEmailEl = document.getElementById('rowEmail');
+    const rowCompEl = document.getElementById('rowCompanions');
+    if (rowPhoneEl) rowPhoneEl.style.display = 'none';
+    if (rowEmailEl) rowEmailEl.style.display = 'none';
+    if (rowCompEl) rowCompEl.style.display = 'none';
+    const phoneEl = document.getElementById('guestPhone');
+    if (phoneEl) phoneEl.required = false;
+    const nameEl = document.getElementById('guestName');
+    if (nameEl) nameEl.value = prefillName || '';
+    if (modalBackdropEl) { modalBackdropEl.style.display = 'flex'; modalBackdropEl.setAttribute('aria-hidden','false'); }
+    setTimeout(()=> nameEl && nameEl.focus && nameEl.focus(), 120);
+  }
+
+  /* Accessibility: close modals with Escape */
+  document.addEventListener('keydown', (e)=>{
+    if(e.key === 'Escape'){
+      if (sadBackdrop && sadBackdrop.style.display === 'flex') { sadBackdrop.style.display='none'; sadBackdrop.setAttribute('aria-hidden','true'); }
+      if (modalBackdrop && modalBackdrop.style.display === 'flex') { closeForm(); }
+      if (successBackdrop && successBackdrop.style.display === 'flex') { successBackdrop.style.display='none'; successBackdrop.setAttribute('aria-hidden','true'); }
+      if (calendarBackdrop && calendarBackdrop.style.display === 'flex') { calendarBackdrop.style.display='none'; calendarBackdrop.setAttribute('aria-hidden','true'); }
+    }
+  });
+
 });
 </script>
 </body>
